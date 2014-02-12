@@ -7,7 +7,7 @@ static SDL_Color elapsed_col = {0, 32, 255, 255},
 struct overview *overview_init(int x, int y, int w, int h)
 {
   struct overview *overview;
-  overview = malloc(sizeof(struct overview));
+  overview = (struct overview *) malloc(sizeof(struct overview));
   overview->rect.x = x;
   overview->rect.y = y;
   overview->rect.w = w;
@@ -79,11 +79,11 @@ void overview_show(struct overview *overview, SDL_Surface *surface,
     y = overview->rect.y;
     w = overview->rect.w;
     h = overview->rect.h;    
-    position = tr->position * tr->rate;
+    position = (int) (tr->position * tr->rate);
     scale = tr->scale;
     
 
-    pixels = surface->pixels;
+    pixels = (Uint8 *) surface->pixels;
     bytes_per_pixel = surface->format->BytesPerPixel;
     pitch = surface->pitch;
     

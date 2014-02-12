@@ -20,7 +20,7 @@ struct track {
     unsigned char ppm[TRACK_MAX_BLOCKS * TRACK_BLOCK_SAMPLES / TRACK_PPM_RES];
 };
 
-struct track tracks[2];
+extern struct track tracks[2];
 
 void track_reset(unsigned int index);
 void track_init(unsigned int index);

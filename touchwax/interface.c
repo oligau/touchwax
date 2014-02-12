@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 
 #include "interface.h"
 #include "closeup.h"
@@ -24,50 +25,50 @@
 //static SDL_Color background_col = {31, 4, 0, 255};
 static SDL_Color background_col = {31, 4, 255, 255};
 
-void interface_update_closeup(struct interface *interface)
+void interface_update_closeup(struct twinterface *twinterface)
 {
-    //if(interface->closeup)
-      //closeup_free(interface->closeup);
-    //interface->closeup = closeup_init(100,
+    //if(twinterface->closeup)
+      //closeup_free(twinterface->closeup);
+    //twinterface->closeup = closeup_init(100,
                            //0, 
-                           //interface->viewport.w - 100 - 100,
-                           //interface->viewport.h, 
+                           //twinterface->viewport.w - 100 - 100,
+                           //twinterface->viewport.h, 
                            //&tracks[0],
-                           //interface->renderer);
+                           //twinterface->renderer);
     printf("Updated closeup.\n");
 }
 
-void interface_closeup_init(struct interface *interface)
+void interface_closeup_init(struct twinterface *twinterface)
 {        
-    if(interface->closeup)
-        closeup_free(interface->closeup);
-    interface->closeup = closeup_init(0,
+    if(twinterface->closeup)
+        closeup_free(twinterface->closeup);
+    twinterface->closeup = closeup_init(0,
                            0, 
-                           interface->viewport.w,
-                           interface->viewport.h, 
+                           twinterface->viewport.w,
+                           twinterface->viewport.h, 
                            &tracks[0],
-                           interface->renderer);
+                           twinterface->renderer);
 }
 
-void interface_widgets_init(struct interface *interface)
+void interface_widgets_init(struct twinterface *twinterface)
 {
-    interface_closeup_init(interface);
-    if(interface->btn)
-        button_free(interface->btn);
-    interface->btn = button_init(interface->viewport.w-100,
-                      interface->viewport.h-100, 
+    interface_closeup_init(twinterface);
+    if(twinterface->btn)
+        button_free(twinterface->btn);
+    twinterface->btn = button_init(twinterface->viewport.w-100,
+                      twinterface->viewport.h-100, 
                       100, 
                       100, 
                       "button.bmp",
-                      interface->renderer);
-    if(interface->fader)
-        fader_free(interface->fader);                      
-    interface->fader = fader_init(interface->viewport.w-100, 
-                       interface->viewport.h/2-50, 
+                      twinterface->renderer);
+    if(twinterface->fader)
+        fader_free(twinterface->fader);                      
+    twinterface->fader = fader_init(twinterface->viewport.w-100, 
+                       twinterface->viewport.h/2-50, 
                        100, 
                        100, 
-                       interface->viewport.h,
-                       interface->renderer);
+                       twinterface->viewport.h,
+                       twinterface->renderer);
 }
 
 
@@ -93,17 +94,17 @@ Uint32 ticker(Uint32 interval, void *p)
 }
 
     
-struct interface *interface_init()
+struct twinterface*interface_init()
 {
-    struct interface *interface;
-    interface = malloc(sizeof(struct interface));
-    interface->closeup = 0;
-    interface->btn = 0;
-    interface->fader = 0;
-    interface->redraw = 0;
-    interface->volumeup_pressed = 0;
-    interface->renderedFrames = 0;
-    interface->last_track_length = tracks[0].length;  
+    struct twinterface *twinterface;
+    twinterface = (struct twinterface*) malloc(sizeof(struct twinterface));
+    twinterface->closeup = 0;
+    twinterface->btn = 0;
+    twinterface->fader = 0;
+    twinterface->redraw = 0;
+    twinterface->volumeup_pressed = 0;
+    twinterface->renderedFrames = 0;
+    twinterface->last_track_length = tracks[0].length;  
           
     /* Enable standard application logging */
     SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO);
@@ -112,27 +113,27 @@ struct interface *interface_init()
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0)
     {
       SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_Init fail : %s\n", SDL_GetError());
-      return interface;
+      return twinterface;
     }
 
     /* Create window and renderer for given surface */
-    interface->window = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-    if(!interface->window)
+    twinterface->window = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    if(!twinterface->window)
     {
       SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Window creation fail : %s\n",SDL_GetError());
-      return interface;
+      return twinterface;
     }	
     
-    interface->renderer = SDL_CreateRenderer(interface->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    twinterface->renderer = SDL_CreateRenderer(twinterface->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 //    interface->renderer = SDL_CreateRenderer(interface->window, -1, 0);
-    if(!interface->renderer)
+    if(!twinterface->renderer)
     {
       SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Render creation for surface fail : %s\n",SDL_GetError());
-      return interface;
+      return twinterface;
     }    
     
     /* Get the Size of drawing surface */
-    SDL_RenderGetViewport(interface->renderer, &interface->viewport);
+    SDL_RenderGetViewport(twinterface->renderer, &twinterface->viewport);
     
     /* SDL interprets each pixel as a 32-bit number, so our masks must depend
        on the endianness (byte order) of the machine */
@@ -149,40 +150,40 @@ struct interface *interface_init()
     amask = 0xff000000;
 #endif
 
-    interface->surface = SDL_CreateRGBSurface(0, interface->viewport.w, interface->viewport.h, 32,
+    twinterface->surface = SDL_CreateRGBSurface(0, twinterface->viewport.w, twinterface->viewport.h, 32,
                                    rmask, gmask, bmask, amask);                                   
-    if(!interface->surface)
+    if(!twinterface->surface)
     {
       SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Surface creation fail : %s\n",SDL_GetError());
-      return interface;
+      return twinterface;
     }                 
     
-    interface->texture = SDL_CreateTexture(interface->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, interface->viewport.w, interface->viewport.h);
+    twinterface->texture = SDL_CreateTexture(twinterface->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, twinterface->viewport.w, twinterface->viewport.h);
     
     /* Clear the rendering surface with the specified color */
-    SDL_SetRenderDrawColor(interface->renderer, 0x0, 0x0, 0x0, 0);
-    SDL_RenderClear(interface->renderer);
+    SDL_SetRenderDrawColor(twinterface->renderer, 0x0, 0x0, 0x0, 0);
+    SDL_RenderClear(twinterface->renderer);
 
     /* Start timer to post ticker events */ 
-    interface->timer = SDL_AddTimer(REFRESH, ticker, NULL);
+    twinterface->timer = SDL_AddTimer(REFRESH, ticker, NULL);
     
     /* Initialize widgets */
-    interface_widgets_init(interface);
+    interface_widgets_init(twinterface);
 
-    return interface;
+    return twinterface;
 }
 
-void interface_resize(struct interface *interface, int w, int h)
+void interface_resize(struct twinterface *twinterface, int w, int h)
 {
 #ifdef __ANDROID__
     __android_log_print(ANDROID_LOG_DEBUG, "interface.c", 
-                    "Asked new interface size %dx%d.\n", w, h);
+                    "Asked new twinterfacesize %dx%d.\n", w, h);
 #endif
 
-    SDL_SetWindowSize(interface->window, w, h);
-    SDL_RenderGetViewport(interface->renderer, &interface->viewport);
-    SDL_DestroyTexture(interface->texture);
-    SDL_FreeSurface(interface->surface);
+    SDL_SetWindowSize(twinterface->window, w, h);
+    SDL_RenderGetViewport(twinterface->renderer, &twinterface->viewport);
+    SDL_DestroyTexture(twinterface->texture);
+    SDL_FreeSurface(twinterface->surface);
 /* SDL interprets each pixel as a 32-bit number, so our masks must depend
    on the endianness (byte order) of the machine */
     Uint32 rmask, gmask, bmask, amask;  
@@ -197,22 +198,22 @@ void interface_resize(struct interface *interface, int w, int h)
     bmask = 0x00ff0000;
     amask = 0xff000000;
 #endif                
-    interface->surface = SDL_CreateRGBSurface(0, interface->viewport.w, interface->viewport.h, 32,
+    twinterface->surface = SDL_CreateRGBSurface(0, twinterface->viewport.w, twinterface->viewport.h, 32,
                                                 rmask, gmask, bmask, amask);
-    interface->texture = SDL_CreateTexture(interface->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, interface->viewport.w, interface->viewport.h);
+    twinterface->texture = SDL_CreateTexture(twinterface->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, twinterface->viewport.w, twinterface->viewport.h);
                 
-    interface_widgets_init(interface);
+    interface_widgets_init(twinterface);
 
                           
-    printf("New interface size is %dx%d.\n", interface->viewport.w, interface->viewport.h);
+    printf("New twinterfacesize is %dx%d.\n", twinterface->viewport.w, twinterface->viewport.h);
 #ifdef __ANDROID__
     __android_log_print(ANDROID_LOG_DEBUG, "interface.c", 
-                    "New interface size is %dx%d.\n", interface->viewport.w, interface->viewport.h);
+                    "New twinterfacesize is %dx%d.\n", twinterface->viewport.w, twinterface->viewport.h);
 #endif
     
 }
 
-void interface_loop(struct interface *interface)
+void interface_loop(struct twinterface *twinterface)
 {
     /* Main loop, process events until we quit */
     while(1)
@@ -229,14 +230,14 @@ void interface_loop(struct interface *interface)
         /* Pressing volume up+down close the application */
         if(e.type == SDL_KEYDOWN) {
             if(e.key.keysym.sym == SDLK_VOLUMEUP) {
-                interface->volumeup_pressed = 1;
+                twinterface->volumeup_pressed = 1;
                 printf("Volume up key have been pressed\n");
 #ifdef __ANDROID__
                 __android_log_print(ANDROID_LOG_DEBUG, "interface.c", 
                     "Volume up key have been pressed\n");
 #endif                
             }else if(e.key.keysym.sym == SDLK_VOLUMEDOWN) {
-                if(interface->volumeup_pressed) {                    
+                if(twinterface->volumeup_pressed) {                    
                     printf("Volume up & down keys have been pressed\n");
 #ifdef __ANDROID__
                 __android_log_print(ANDROID_LOG_DEBUG, "interface.c", 
@@ -247,7 +248,7 @@ void interface_loop(struct interface *interface)
             }
         } else if(e.type == SDL_KEYUP) {
             if(e.key.keysym.sym == SDLK_VOLUMEUP) {
-                interface->volumeup_pressed = 0;
+                twinterface->volumeup_pressed = 0;
                 printf("Volume up key have been released\n");
 #ifdef __ANDROID__
                 __android_log_print(ANDROID_LOG_DEBUG, "interface.c", 
@@ -258,53 +259,53 @@ void interface_loop(struct interface *interface)
             
         if(e.type == SDL_WINDOWEVENT) {
             if(e.window.event == SDL_WINDOWEVENT_RESIZED) {
-                interface_resize(interface, e.window.data1, e.window.data2);
+                interface_resize(twinterface, e.window.data1, e.window.data2);
             }
         }
         
         /* Handle timer events */
         if(e.type == EVENT_TICKER)
-            interface->redraw = 1;
+            twinterface->redraw = 1;
         
       }
       
       /* Handle widgets events */        
-      fader_pitch(interface->fader); // calculate pitch value from fader position
-      if(!fader_handle_events(interface->fader, e, interface->viewport.h) &&
-         !button_handle_events(interface->btn, e) /* &&
+      fader_pitch(twinterface->fader); // calculate pitch value from fader position
+      if(!fader_handle_events(twinterface->fader, e, twinterface->viewport.h) &&
+         !button_handle_events(twinterface->btn, e) /* &&
          !overview_handle_events(overview, e)*/)
-          closeup_handle_events(interface->closeup, e);
+          closeup_handle_events(twinterface->closeup, e);
       
       /* draw each widgets to surface if timer said so */
-      if(interface->redraw) {
-          SDL_RenderClear(interface->renderer);
+      if(twinterface->redraw) {
+          SDL_RenderClear(twinterface->renderer);
           
           /* Clear surface with background color*/
-          SDL_FillRect(interface->surface, NULL, interface_palette(interface->surface, &background_col));
-          SDL_UpdateTexture(interface->texture, NULL, interface->surface->pixels, interface->surface->pitch);
-          SDL_RenderCopy(interface->renderer, interface->texture, NULL, NULL);                
+          SDL_FillRect(twinterface->surface, NULL, interface_palette(twinterface->surface, &background_col));
+          SDL_UpdateTexture(twinterface->texture, NULL, twinterface->surface->pixels, twinterface->surface->pitch);
+          SDL_RenderCopy(twinterface->renderer, twinterface->texture, NULL, NULL);                
                  
           /* Listen for track change, if change update closeup */       
-          if(interface->last_track_length != tracks[0].length) {
-            interface_closeup_init(interface);
-            interface->last_track_length = tracks[0].length;
+          if(twinterface->last_track_length != tracks[0].length) {
+            interface_closeup_init(twinterface);
+            twinterface->last_track_length = tracks[0].length;
           }
           
           /* Render widgets on surface */
-          closeup_show(interface->closeup);  
+          closeup_show(twinterface->closeup);  
           //overview_show(overview, surface, &tracks[0]);
-          button_show(interface->btn);
-          fader_show(interface->fader);
+          button_show(twinterface->btn);
+          fader_show(twinterface->fader);
                
           /* Got everything on rendering surface,
              now Update the drawing image on window screen */
-          SDL_RenderPresent(interface->renderer);
+          SDL_RenderPresent(twinterface->renderer);
                     
-          interface->renderedFrames++;
+          twinterface->renderedFrames++;
           
           //printf("FPS:%f\n", (renderedFrames / (float) SDL_GetTicks())*1000);
           
-          interface->redraw = 0;
+          twinterface->redraw = 0;
       }
     }
 
@@ -315,20 +316,20 @@ void interface_loop(struct interface *interface)
 }
 
 
-void interface_free(struct interface *interface)
+void interface_free(struct twinterface *twinterface)
 {
-    button_free(interface->btn);
-    fader_free(interface->fader);
-    //overview_free(interface->overview);
-    closeup_free(interface->closeup);
+    button_free(twinterface->btn);
+    fader_free(twinterface->fader);
+    //overview_free(twinterface->overview);
+    closeup_free(twinterface->closeup);
     
-    SDL_FreeSurface(interface->surface);
-    SDL_DestroyTexture(interface->texture);
-    SDL_DestroyRenderer(interface->renderer);
-    SDL_DestroyWindow(interface->window);
-    SDL_RemoveTimer(interface->timer);
+    SDL_FreeSurface(twinterface->surface);
+    SDL_DestroyTexture(twinterface->texture);
+    SDL_DestroyRenderer(twinterface->renderer);
+    SDL_DestroyWindow(twinterface->window);
+    SDL_RemoveTimer(twinterface->timer);
     
-    free(interface);
+    free(twinterface);
     
     SDL_Quit();    
 }

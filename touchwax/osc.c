@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+
+#ifndef _MSC_VER
 #include <unistd.h>
+#endif
 
 #ifdef __ANDROID__
 #include <android/log.h>
@@ -38,10 +41,10 @@ int pos_handler(const char *path, const char *types, lo_arg ** argv,
 int scale_handler(const char *path, const char *types, lo_arg ** argv,
                     int argc, void *data, void *user_data);                   
 
-int osc_init(struct interface *interface)
+int osc_init(struct twinterface *twinterface)
 {
-    osc = malloc(sizeof(struct osc));
-    osc->interface = interface;
+    osc = (struct osc *) malloc(sizeof(struct osc));
+    osc->twinterface = twinterface;
     
     /* start a new server on port 7770 */
     st = lo_server_thread_new("7771", error);
@@ -139,7 +142,7 @@ int track_load_handler(const char *path, const char *types, lo_arg ** argv,
     tracks[0].title = (char *) argv[1];
     tracks[0].rate = argv[2]->i;
     
-    interface_update_closeup(osc->interface);
+    interface_update_closeup(osc->twinterface);
 
 #ifdef __ANDROID__
     __android_log_print(ANDROID_LOG_DEBUG, "osc.c", "artist:%s\ntitle:%s", tracks[0].artist, tracks[0].title);
@@ -163,7 +166,7 @@ int ppm_handler(const char *path, const char *types, lo_arg ** argv,
             
     lo_blob blob = argv[0];
     int size = lo_blob_datasize(blob);
-    unsigned char *bdata = lo_blob_dataptr(blob);
+    unsigned char *bdata = (unsigned char *) lo_blob_dataptr(blob);
     
     tracks[0].length = (unsigned int) argv[1]->i;
     

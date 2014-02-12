@@ -1,4 +1,17 @@
+#ifdef _MSC_VER
+#include <math.h>
+#include <stdio.h>
+#else
 #include <unistd.h>
+#endif
+
+#ifdef _WINDOWS
+#include <windows.h>
+#else
+#include <unistd.h>
+#define Sleep(x) usleep((x)*1000)
+#endif
+
 #include "closeup.h"
 #include "osc.h"
 
@@ -18,7 +31,7 @@ struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_R
     w = 0;
 
   struct closeup *closeup;
-  closeup = malloc(sizeof(struct closeup));
+  closeup = (struct closeup *) malloc(sizeof(struct closeup));
   closeup->rect.x = x;
   closeup->rect.y = y;
   closeup->rect.w = w;
@@ -56,7 +69,7 @@ struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_R
   /* Build tiles set*/
   closeup->nb_tile = 0;
   if(closeup->tr->length)
-    closeup->nb_tile = ceilf((closeup->tr->length >> closeup->tr->scale) / (float) closeup->padded_h);    
+    closeup->nb_tile = (int) ceilf((closeup->tr->length >> closeup->tr->scale) / (float) closeup->padded_h);    
   closeup->tile_prev = (struct tile *) malloc(sizeof(struct tile));  
   closeup->tile_current = (struct tile *) malloc(sizeof(struct tile));
   closeup->tile_next = (struct tile *) malloc(sizeof(struct tile));
@@ -125,17 +138,18 @@ void closeup_draw_waveform(struct closeup *closeup, SDL_Surface *surface, int of
     //h = closeup->rect.h;
     //h = closeup->tr->length;
     h = closeup->padded_h;
-    position = closeup->tr->position * closeup->tr->rate;
+    position = (int) (closeup->tr->position * closeup->tr->rate);
     scale = closeup->tr->scale;
   
-    pixels = surface->pixels;
+    pixels = (Uint8 *) surface->pixels;
     bytes_per_pixel = surface->format->BytesPerPixel;
     pitch = surface->pitch;
 
     /* Draw in rows */
 
     for (r = 0; r < h; r++) {
-        int c, sp, width, fade;
+        int c, width, fade;
+		unsigned int sp;
         Uint8 *p;
         //SDL_Color col;
 
@@ -259,7 +273,7 @@ void *closeup_tile_updater(void *param)
         closeup->modified = 1;
         
       }
-      usleep(1000);
+      Sleep(1);
     }
     
     return 0;
@@ -289,7 +303,7 @@ void closeup_show(struct closeup *closeup)
 {
   
   if(closeup->tr->length != closeup->last_length) {
-    closeup->nb_tile = ceilf((closeup->tr->length >> closeup->tr->scale) / (float) closeup->padded_h);
+    closeup->nb_tile = (int) ceilf((closeup->tr->length >> closeup->tr->scale) / (float) closeup->padded_h);
     closeup->last_length = closeup->tr->length;
     printf("updated nb_tile:%i\n", closeup->nb_tile);
 #ifdef __ANDROID__
@@ -298,7 +312,7 @@ void closeup_show(struct closeup *closeup)
 #endif       
   }
   
-  int pos = ((int)(tracks[0].position * tracks[0].rate) / 64);
+  int pos = ((int)(closeup->tr->position * closeup->tr->rate) / 64);
   int prev_heigth, current_heigth, next_heigth;
   int prev_y, current_y, next_y;
     
@@ -401,7 +415,7 @@ void closeup_handle_events(struct closeup *closeup, SDL_Event event)
             
             if(closeup->clicked) {
                 //tracks[0].position = tracks[0].position + x;
-                osc_send_position(tracks[0].position - y/100);
+                osc_send_position(closeup->tr->position - y/100);
                 //printf("x:%f y:%f\n", x, y);
             }
             
@@ -429,7 +443,7 @@ void closeup_free(struct closeup *closeup)
   
   /* Wait that tile renderer thread idles before killing closeup */
   while(closeup->tile != closeup->rendered_tile) {
-    usleep(1000);
+    Sleep(1);
   }
   
   closeup->thread_tile_updater_done = 1;

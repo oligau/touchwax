@@ -6,7 +6,7 @@ static SDL_Color fader_col = {255, 0, 0, 255};
 struct fader *fader_init(int x, int y, int w, int h, int heigth, SDL_Renderer *renderer)
 {
   struct fader *fader;
-  fader = malloc(sizeof(struct fader));
+  fader = (struct fader *) malloc(sizeof(struct fader));
   fader->rect.x = x;
   fader->rect.y = y;
   fader->rect.w = w;
@@ -125,8 +125,8 @@ Uint32 fader_palette(SDL_Surface *sf, SDL_Color *col)
 void fader_pitch(struct fader *fader)
 {
     float y = ((float) fader->rect.y )/ fader->heigth;
-    float min = 0.86;
-    float max = 1.16;
+    float min = 0.86f;
+    float max = 1.16f;
     float pitch = y * (max-min) + min;
     tracks[0].pitch = pitch;
 }

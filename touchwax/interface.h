@@ -5,7 +5,7 @@
 
 #include "track.h"
 
-struct interface {
+struct twinterface{
   int redraw;
   int volumeup_pressed;
   int renderedFrames;  
@@ -23,13 +23,13 @@ struct interface {
   
 };
 
-void interface_closeup_init(struct interface *interface);
-void interface_widgets_init(struct interface *interface);
-struct interface *interface_init();
-void interface_resize(struct interface *interface, int w, int h);
-void interface_loop(struct interface *interface);
-void interface_update_closeup(struct interface *interface);
-void interface_free(struct interface *interface);
+void interface_closeup_init(struct twinterface *twinterface);
+void interface_widgets_init(struct twinterface *twinterface);
+struct twinterface*interface_init();
+void interface_resize(struct twinterface *twinterface, int w, int h);
+void interface_loop(struct twinterface *twinterface);
+void interface_update_closeup(struct twinterface *twinterface);
+void interface_free(struct twinterface *twinterface);
 
 /* Timer related functions */
 Uint32 ticker(Uint32 interval, void *p);

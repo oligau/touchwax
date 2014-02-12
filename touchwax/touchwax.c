@@ -24,19 +24,19 @@
 int
 main(int argc, char *argv[])
 {
-        struct interface *interface;
+        struct twinterface *twinterface;
         
         track_init(0);
-        interface = interface_init();
-        if(!interface) {
+        twinterface = interface_init();
+        if(!twinterface) {
                 printf("Interface creation exited with error\n");
                 return -1;
         }
-        osc_init(interface); /* start OSC server to receive network messages */
+        osc_init(twinterface); /* start OSC server to receive network messages */
         
-        interface_loop(interface);
+        interface_loop(twinterface);
         
-        interface_free(interface);
+        interface_free(twinterface);
         osc_free();
         
         printf("Exiting cleanly...\n");

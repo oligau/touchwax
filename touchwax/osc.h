@@ -4,10 +4,10 @@
 #include "interface.h"
 
 struct osc {
-  struct interface *interface;
+  struct twinterface *twinterface;
 };
 
-int osc_init(struct interface *interface);
+int osc_init(struct twinterface *twinterface);
 void osc_free();
 //int osc_send_pos(const float pos);
 //int osc_send_track_load();

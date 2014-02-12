@@ -14,12 +14,12 @@ const int CLIP_MOUSEUP = 3;
 struct button *button_init(int x, int y, int w, int h, const char *filename, SDL_Renderer *renderer)
 {
   struct button *btn;
-  btn = malloc(sizeof(struct button));
+  btn = (struct button *) malloc(sizeof(struct button));
   btn->rect.x = x;
   btn->rect.y = y;
   btn->rect.w = w;
   btn->rect.h = h;
-  button_set_clips(btn);
+  //button_set_clips(btn);
   //btn->buttonSheet = button_load_image(filename);
   btn->buttonSheet = 0;
   btn->clip = &(btn->clips[ CLIP_MOUSEOUT ]);

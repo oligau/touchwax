@@ -4,6 +4,7 @@
 #include <android/log.h>
 #endif
 
+struct track tracks[2]; // extern from track.h
 
 void track_reset(unsigned int index)
 {
