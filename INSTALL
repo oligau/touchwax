@@ -1,0 +1,22 @@
+The recommended way to build touchwax is to run "make" followed 
+optionally by "make install" to install at the given prefix; eg.
+
+  $ make PREFIX=/usr
+  $ make PREFIX=/usr install  # as root
+
+If PREFIX is not given, the user's home directory is used and "make
+install" does not need to be run as root.
+
+Compilation errors are most likely the result of missing
+libraries. You need the libraries and header files installed for:
+
+* liblo: http://liblo.sourceforge.net/
+* libSDL 2.0: http://www.libsdl.org/
+* SDL_ttf 2.0 (sometimes part of the SDL package, sometimes not)
+
+These libraries are packaged with most Linux distributions and this is
+the recommended way to install them.
+
+For debian you need to run the following command as root to install 
+development packages.
+  $ apt-get install libsdl2-dev liblo-dev libsdlttf-dev

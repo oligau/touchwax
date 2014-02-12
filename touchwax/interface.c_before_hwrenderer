@@ -1,0 +1,232 @@
+#include <stdio.h>
+
+#include "interface.h"
+#include "track.h"
+#include "button.h"
+
+/* Screen refresh time in milliseconds */
+
+#define REFRESH 10
+
+/* Types of SDL_USEREVENT */
+
+#define EVENT_TICKER (SDL_USEREVENT)
+
+/* Colors used */
+
+static SDL_Color elapsed_col = {0, 32, 255, 255},
+    needle_col = {255, 255, 255, 255};
+
+/*
+ * Draw the close-up meter, which can be zoomed to a level set by
+ * 'scale'
+ * Taken from xwax
+ */
+
+static void draw_closeup(SDL_Surface *surface, const SDL_Rect *rect,
+                         struct track *tr, int position, int scale)
+{
+    int x, y, w, h, c;
+    size_t bytes_per_pixel, pitch;
+    Uint8 *pixels;
+
+    x = rect->x;
+    y = rect->y;
+    w = rect->w;
+    h = rect->h;    
+
+    pixels = surface->pixels;
+    bytes_per_pixel = surface->format->BytesPerPixel;
+    pitch = surface->pitch;
+
+    /* Draw in columns. This may seem like a performance hit,
+     * but oprofile shows it makes no difference */
+
+    for (c = 0; c < w; c++) {
+        int r, sp, height, fade;
+        Uint8 *p;
+        SDL_Color col;
+
+        /* Work out the meter height in pixels for this column */
+
+        sp = position - (position % (1 << scale))
+            + ((c - w / 2) << scale);
+
+        if (sp < tr->length && sp > 0)
+            height = track_get_ppm(tr, sp) * h / 256;
+        else
+            height = 0;
+
+        /* Select the appropriate colour */
+
+        if (c == w / 2) {
+            col = needle_col;
+            fade = 1;
+        } else {
+            col = elapsed_col;
+            fade = 3;
+        }
+
+        /* Get a pointer to the top of the column, and increment
+         * it for each row */
+
+        p = pixels + y * pitch + (x + c) * bytes_per_pixel;
+
+        r = h;
+        while (r > height) {
+            p[0] = col.b >> fade;
+            p[1] = col.g >> fade;
+            p[2] = col.r >> fade;
+            p += pitch;
+            r--;
+        }
+        while (r) {
+            p[0] = col.b;
+            p[1] = col.g;
+            p[2] = col.r;
+            p += pitch;
+            r--;
+        }
+    }
+}
+
+static void push_event(int t)
+{
+    SDL_Event e;
+
+    if (!SDL_PeepEvents(&e, 1, SDL_PEEKEVENT, t, t)) {
+        e.type = t;
+        if (SDL_PushEvent(&e) == -1)
+            abort();
+    }
+}
+
+/*
+ * Timer which posts a screen redraw event
+ */
+
+static Uint32 ticker(Uint32 interval, void *p)
+{
+    push_event(EVENT_TICKER);
+    return interval;
+}
+
+    
+int interface_start()
+  {
+    
+    SDL_Window *window;
+    SDL_Surface *surface;
+    SDL_Renderer *renderer;
+    SDL_TimerID timer;
+    int redraw = 0;
+
+    
+    struct button *btn;
+#ifdef __ANDROID__    
+    btn = button_init(0, 0, 200, 200, "button.bmp");
+#else
+    btn = button_init(0, 0, 200, 200, "res/button.bmp");
+#endif
+    
+    int renderedFrames = 0;    
+          
+    /* Enable standard application logging */
+    SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO);
+
+    /* Initialize SDL */
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0)
+    {
+      SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_Init fail : %s\n", SDL_GetError());
+      return 1;
+    }
+
+
+    /* Create window and renderer for given surface */
+    window = SDL_CreateWindow("Touchwax", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    if(!window)
+    {
+      SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Window creation fail : %s\n",SDL_GetError());
+      return 1;
+    }	
+    surface = SDL_GetWindowSurface(window);
+    renderer = SDL_CreateSoftwareRenderer(surface);
+    if(!renderer)
+    {
+      SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Render creation for surface fail : %s\n",SDL_GetError());
+      return 1;
+    }
+
+    /* Clear the rendering surface with the specified color */
+    SDL_SetRenderDrawColor(renderer, 0x0, 0x0, 0x0, 0);
+    SDL_RenderClear(renderer);
+
+    /* Start timer to post ticker events */ 
+    timer = SDL_AddTimer(REFRESH, ticker, NULL);
+
+    /* Draw the Image on rendering surface */
+    while(1)
+    {
+      SDL_Event e;
+      if (SDL_PollEvent(&e)) {
+          
+        //Handle button events
+        button_handle_events(btn, e);  
+          
+        if (e.type == SDL_QUIT) 
+          break;
+
+        if(e.key.keysym.sym == SDLK_ESCAPE)
+          break;
+          
+        if(e.type == EVENT_TICKER)
+            redraw = 1;
+            
+        if(e.type == SDL_WINDOWEVENT) {
+            if(e.window.event == SDL_WINDOWEVENT_RESIZED) {
+                SDL_SetWindowSize(window, e.window.data1, e.window.data2);
+                surface = SDL_GetWindowSurface(window);
+                renderer = SDL_CreateSoftwareRenderer(surface);
+                printf("New interface size is %dx%d.\n", e.window.data1, e.window.data2);
+            }
+        }
+      }
+      
+      if(redraw) {
+          SDL_Rect viewport;
+
+          /* Get the Size of drawing surface */
+          SDL_RenderGetViewport(renderer, &viewport);
+          
+          draw_closeup(surface, &viewport, &tracks[0], tracks[0].position * 44100.0, tracks[0].scale);
+          
+          button_show(btn, surface);
+               
+          /* Got everything on rendering surface,
+             now Update the drawing image on window screen */
+          SDL_UpdateWindowSurface(window);
+          SDL_RenderPresent(renderer);
+          
+          renderedFrames++;
+          
+          //printf("FPS:%f\n", (renderedFrames / (float) SDL_GetTicks())*1000);
+          
+          redraw = 0;
+    } else {
+        //SDL_Delay(20);
+    }
+      
+    }
+    
+    button_free(btn);
+    SDL_RemoveTimer(timer);
+
+    return 0;
+  
+  }
+
+void interface_stop()
+{
+    
+    SDL_Quit();
+}

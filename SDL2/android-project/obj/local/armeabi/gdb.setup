@@ -1,0 +1,4 @@
+set solib-search-path ./obj/local/armeabi
+directory /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include jni/SDL/include jni/lo/lo jni/src/../SDL2/include jni/src/../SDL2/android-project/jni/lo/ /home/oligau/bin/android-ndk-r9b/sources/cxx-stl/system
+file ./obj/local/armeabi/app_process
+target remote :5039
