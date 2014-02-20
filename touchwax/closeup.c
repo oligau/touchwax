@@ -106,6 +106,8 @@ struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_R
   closeup->tiles[4]->rect.w = closeup->rect.w;
   closeup->tiles[4]->rect.h = closeup->padded_h;
   
+  closeup->tile_index[0] = 0;
+  
   printf("nb_tile: %i\n", closeup->nb_tile);
 #ifdef __ANDROID__
                 __android_log_print(ANDROID_LOG_DEBUG, "closeup.c", 
@@ -259,23 +261,29 @@ void closeup_update_init(struct closeup *closeup)
   int pos = (int)(closeup->tr->position * closeup->tr->rate) / 64;
   int floor_pos = floorf((float)pos / (float)closeup->padded_h);
   
-  closeup->tiles[0]->offset = floor_pos + (closeup->padded_h * -2); 
-  closeup->tiles[1]->offset = floor_pos + (closeup->padded_h * -1);
-  closeup->tiles[2]->offset = floor_pos;
-  closeup->tiles[3]->offset = floor_pos + (closeup->padded_h * 1);
-  closeup->tiles[4]->offset = floor_pos + (closeup->padded_h * 2);  
+  closeup->tiles[0]->offset = (closeup->padded_h * -5); 
+  closeup->tiles[1]->offset = (closeup->padded_h * -4);
+  closeup->tiles[2]->offset = (closeup->padded_h * -3);
+  closeup->tiles[3]->offset = (closeup->padded_h * -2);
+  closeup->tiles[4]->offset = (closeup->padded_h * -1);
   
-  closeup_draw_waveform(closeup, closeup->tiles[0]->surface, closeup->tiles[0]->offset, next_col); 
-  closeup_draw_waveform(closeup, closeup->tiles[1]->surface, closeup->tiles[1]->offset, elapsed_col);  
-  closeup_draw_waveform(closeup, closeup->tiles[2]->surface, closeup->tiles[2]->offset, next_col); 
-  closeup_draw_waveform(closeup, closeup->tiles[3]->surface, closeup->tiles[3]->offset, elapsed_col);
-  closeup_draw_waveform(closeup, closeup->tiles[4]->surface, closeup->tiles[4]->offset, next_col);  
+  closeup->tiles[0]->tile_no = -5;
+  closeup->tiles[1]->tile_no = -4;
+  closeup->tiles[2]->tile_no = -3;
+  closeup->tiles[3]->tile_no = -2;
+  closeup->tiles[4]->tile_no = -1;
+  
+  //closeup_draw_waveform(closeup, closeup->tiles[0]->surface, closeup->tiles[0]->offset, next_col); 
+  //closeup_draw_waveform(closeup, closeup->tiles[1]->surface, closeup->tiles[1]->offset, elapsed_col);  
+  //closeup_draw_waveform(closeup, closeup->tiles[2]->surface, closeup->tiles[2]->offset, next_col); 
+  //closeup_draw_waveform(closeup, closeup->tiles[3]->surface, closeup->tiles[3]->offset, elapsed_col);
+  //closeup_draw_waveform(closeup, closeup->tiles[4]->surface, closeup->tiles[4]->offset, next_col);  
 
-  SDL_UpdateTexture(closeup->tiles[0]->texture, NULL, closeup->tiles[0]->surface->pixels, closeup->tiles[0]->surface->pitch);
-  SDL_UpdateTexture(closeup->tiles[1]->texture, NULL, closeup->tiles[1]->surface->pixels, closeup->tiles[1]->surface->pitch);
-  SDL_UpdateTexture(closeup->tiles[2]->texture, NULL, closeup->tiles[2]->surface->pixels, closeup->tiles[2]->surface->pitch);
-  SDL_UpdateTexture(closeup->tiles[3]->texture, NULL, closeup->tiles[3]->surface->pixels, closeup->tiles[3]->surface->pitch);
-  SDL_UpdateTexture(closeup->tiles[4]->texture, NULL, closeup->tiles[4]->surface->pixels, closeup->tiles[4]->surface->pitch);
+  //SDL_UpdateTexture(closeup->tiles[0]->texture, NULL, closeup->tiles[0]->surface->pixels, closeup->tiles[0]->surface->pitch);
+  //SDL_UpdateTexture(closeup->tiles[1]->texture, NULL, closeup->tiles[1]->surface->pixels, closeup->tiles[1]->surface->pitch);
+  //SDL_UpdateTexture(closeup->tiles[2]->texture, NULL, closeup->tiles[2]->surface->pixels, closeup->tiles[2]->surface->pitch);
+  //SDL_UpdateTexture(closeup->tiles[3]->texture, NULL, closeup->tiles[3]->surface->pixels, closeup->tiles[3]->surface->pitch);
+  //SDL_UpdateTexture(closeup->tiles[4]->texture, NULL, closeup->tiles[4]->surface->pixels, closeup->tiles[4]->surface->pitch);
   
   /* Notify render thread that we have a new tile to render */
   //++closeup->tile;  
@@ -302,17 +310,79 @@ void *closeup_tile_updater(void *param)
 void closeup_update(struct closeup *closeup)
 {
   if(closeup->nb_tile) {
+    
     int pos = ((int)(closeup->tr->position * closeup->tr->rate) / 64);
+    int current_tile = (pos / 4096);
+        
     if(closeup->forward) {
-      //if(closeup->last_pos - pos > closeup->padded_h) {
-          closeup_draw_waveform(closeup, closeup->tiles[4]->surface, closeup->tiles[4]->offset, next_col);
-          ++closeup->modified[4]; // Inform render thread that we have a new tile to copy to gpu
+      
+      // Verify if tile 0 is outside threshold
+      if(closeup->tiles[closeup->tile_index[0]]->tile_no != current_tile - 2 &&
+          (closeup->tile_index[0] >=0 && closeup->tile_index[0] < 5)) {
+        
+        closeup->tiles[closeup->tile_index[0]]->offset = pos - (closeup->padded_h * 2);
+        closeup->tiles[closeup->tile_index[0]]->tile_no = current_tile - 21;
+        closeup_draw_waveform(closeup, closeup->tiles[closeup->tile_index[0]]->surface, closeup->tiles[closeup->tile_index[0]]->offset, next_col);
+        ++closeup->modified[closeup->tile_index[0]]; // Inform render thread that we have a new tile to copy to gpu
+        
+      }         
+      
+      // Verify if tile 1 is outside threshold
+      if(closeup->tiles[closeup->tile_index[1]]->tile_no != current_tile - 1 &&
+          (closeup->tile_index[1] >=0 && closeup->tile_index[1] < 5)) {
+        
+        closeup->tiles[closeup->tile_index[1]]->offset = pos - (closeup->padded_h * 1);
+        closeup->tiles[closeup->tile_index[1]]->tile_no = current_tile - 1;
+        closeup_draw_waveform(closeup, closeup->tiles[closeup->tile_index[1]]->surface, closeup->tiles[closeup->tile_index[1]]->offset, next_col);
+        ++closeup->modified[closeup->tile_index[1]]; // Inform render thread that we have a new tile to copy to gpu
+        
+      }          
+      
+      // Verify if tile 2 is outside threshold
+      if(closeup->tiles[closeup->tile_index[2]]->tile_no != current_tile &&
+          (closeup->tile_index[2] >=0 && closeup->tile_index[2] < 5)) {
+        
+        closeup->tiles[closeup->tile_index[2]]->offset = pos;
+        closeup->tiles[closeup->tile_index[2]]->tile_no = current_tile;
+        closeup_draw_waveform(closeup, closeup->tiles[closeup->tile_index[2]]->surface, closeup->tiles[closeup->tile_index[2]]->offset, next_col);
+        ++closeup->modified[closeup->tile_index[2]]; // Inform render thread that we have a new tile to copy to gpu
+        
+      }            
+      
+      // Verify if tile 3 is outside threshold
+      if(closeup->tiles[closeup->tile_index[3]]->tile_no != current_tile + 1 &&
+          (closeup->tile_index[3] >=0 && closeup->tile_index[3] < 5)) {
+        
+        closeup->tiles[closeup->tile_index[3]]->offset = pos + (closeup->padded_h * 1);
+        closeup->tiles[closeup->tile_index[3]]->tile_no = current_tile + 1;
+        closeup_draw_waveform(closeup, closeup->tiles[closeup->tile_index[3]]->surface, closeup->tiles[closeup->tile_index[3]]->offset, next_col);
+        ++closeup->modified[closeup->tile_index[3]]; // Inform render thread that we have a new tile to copy to gpu
+        
+      }      
+      
+      // Verify if tile 4 is outside threshold
+      if(closeup->tiles[closeup->tile_index[4]]->tile_no != current_tile + 2 &&
+          (closeup->tile_index[4] >=0 && closeup->tile_index[0] < 5)) {
+        
+        closeup->tiles[closeup->tile_index[4]]->offset = pos + (closeup->padded_h * 2);
+        closeup->tiles[closeup->tile_index[4]]->tile_no = current_tile + 2;
+        closeup_draw_waveform(closeup, closeup->tiles[closeup->tile_index[4]]->surface, closeup->tiles[closeup->tile_index[4]]->offset, next_col);
+        ++closeup->modified[closeup->tile_index[4]]; // Inform render thread that we have a new tile to copy to gpu
+        
+      }
       //}
     } else {
-      //if(pos - closeup->last_pos > closeup->padded_h) {
-          closeup_draw_waveform(closeup, closeup->tiles[0]->surface, closeup->tiles[0]->offset, next_col);
-          ++closeup->modified[0]; // Inform render thread that we have a new tile to copy to gpu
-      //}      
+      
+      //// Verify if tile 0 is outside threshold
+      //if(closeup->tiles[closeup->tile_index[0]]->tile_no != current_tile - 2 &&
+          //(closeup->tile_index[0] >=0 && closeup->tile_index[0] < 5)) {
+        
+        //closeup->tiles[closeup->tile_index[0]]->offset = pos - (closeup->padded_h * 2);
+        //closeup->tiles[closeup->tile_index[0]]->tile_no = current_tile - 2;
+        //closeup_draw_waveform(closeup, closeup->tiles[closeup->tile_index[0]]->surface, closeup->tiles[closeup->tile_index[0]]->offset, next_col);
+        //++closeup->modified[closeup->tile_index[0]]; // Inform render thread that we have a new tile to copy to gpu
+        
+      //}
     }
   }
 }
@@ -369,31 +439,41 @@ void closeup_show(struct closeup *closeup)
     if(closeup->modified[0]) {
       SDL_UpdateTexture(closeup->tiles[0]->texture, NULL, closeup->tiles[0]->surface->pixels, closeup->tiles[0]->surface->pitch);    
       closeup->modified[0] = 0;
+    } else if(closeup->modified[1]) {
+      SDL_UpdateTexture(closeup->tiles[1]->texture, NULL, closeup->tiles[1]->surface->pixels, closeup->tiles[1]->surface->pitch);    
+      closeup->modified[1] = 0;      
+    } else if(closeup->modified[2]) {
+      SDL_UpdateTexture(closeup->tiles[2]->texture, NULL, closeup->tiles[2]->surface->pixels, closeup->tiles[2]->surface->pitch);    
+      closeup->modified[2] = 0;      
+    } else if(closeup->modified[3]) {
+      SDL_UpdateTexture(closeup->tiles[3]->texture, NULL, closeup->tiles[3]->surface->pixels, closeup->tiles[3]->surface->pitch);    
+      closeup->modified[3] = 0;      
     } else if(closeup->modified[4]) {
-      SDL_UpdateTexture(closeup->tiles[0]->texture, NULL, closeup->tiles[0]->surface->pixels, closeup->tiles[0]->surface->pitch);    
+      SDL_UpdateTexture(closeup->tiles[4]->texture, NULL, closeup->tiles[4]->surface->pixels, closeup->tiles[4]->surface->pitch);    
       closeup->modified[4] = 0;      
     }
     
-    int current_tile = (pos / 4096);
-    printf("current_tile: %i\n", current_tile);
-        
-    int tile_index[5];
-    tile_index[0] = ((current_tile % 5) + 0) % 5;
-    tile_index[1] = ((current_tile % 5) + 1) % 5;
-    tile_index[2] = ((current_tile % 5) + 2) % 5;
-    tile_index[3] = ((current_tile % 5) + 3) % 5;
-    tile_index[4] = ((current_tile % 5) + 4) % 5;
+    /* end of ugly hack */
     
-    if(tile_index[0] >= 0)
-      SDL_RenderCopy(closeup->renderer, closeup->tiles[tile_index[0]]->texture, &source, &closeup->tiles[0]->rect);
-    if(tile_index[1] >= 0)
-      SDL_RenderCopy(closeup->renderer, closeup->tiles[tile_index[1]]->texture, &source, &closeup->tiles[1]->rect);
-    if(tile_index[2] >= 0)    
-      SDL_RenderCopy(closeup->renderer, closeup->tiles[tile_index[2]]->texture, &source, &closeup->tiles[2]->rect);
-    if(tile_index[3] >= 0)    
-      SDL_RenderCopy(closeup->renderer, closeup->tiles[tile_index[3]]->texture, &source, &closeup->tiles[3]->rect);
-    if(tile_index[4] >= 0)    
-      SDL_RenderCopy(closeup->renderer, closeup->tiles[tile_index[4]]->texture, &source, &closeup->tiles[4]->rect);
+    int current_tile = (pos / 4096);
+    //printf("current_tile: %i\n", current_tile);
+        
+    closeup->tile_index[0] = ((current_tile % 5) + 0) % 5;
+    closeup->tile_index[1] = ((current_tile % 5) + 1) % 5;
+    closeup->tile_index[2] = ((current_tile % 5) + 2) % 5;
+    closeup->tile_index[3] = ((current_tile % 5) + 3) % 5;
+    closeup->tile_index[4] = ((current_tile % 5) + 4) % 5;
+    
+    if(closeup->tile_index[0] >= 0)
+      SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[0]]->texture, &source, &closeup->tiles[0]->rect);
+    if(closeup->tile_index[1] >= 0)
+      SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[1]]->texture, &source, &closeup->tiles[1]->rect);
+    if(closeup->tile_index[2] >= 0)    
+      SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[2]]->texture, &source, &closeup->tiles[2]->rect);
+    if(closeup->tile_index[3] >= 0)    
+      SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[3]]->texture, &source, &closeup->tiles[3]->rect);
+    if(closeup->tile_index[4] >= 0)    
+      SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[4]]->texture, &source, &closeup->tiles[4]->rect);
     
     //printf(" tile0: %i\n tile1: %i\n tile2: %i\n tile3: %i\n tile4: %i\n",
     //tile_index[0],

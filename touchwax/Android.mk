@@ -21,7 +21,7 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
 	closeup.c \
 	interface.c
 
-LOCAL_SHARED_LIBRARIES := SDL2 lo
+LOCAL_SHARED_LIBRARIES := lo SDL2
 
 LOCAL_LDLIBS := -lGLESv1_CM -llog
 

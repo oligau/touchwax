@@ -1,12 +1,13 @@
-obj/local/armeabi/objs-debug/main/__/SDL2/src/main/android/SDL_android_main.o: \
- jni/src/../SDL2/src/main/android/SDL_android_main.c \
- jni/src/../SDL2/include/SDL_config.h \
- jni/src/../SDL2/include/SDL_platform.h \
- jni/src/../SDL2/include/begin_code.h \
- jni/src/../SDL2/include/close_code.h \
- jni/src/../SDL2/include/SDL_config_android.h \
- jni/src/../SDL2/include/SDL_main.h jni/src/../SDL2/include/SDL_stdinc.h \
- jni/src/../SDL2/include/SDL_config.h \
+/home/oligau/documents/devel/touchwax/SDL2/android-project/obj/local/armeabi/objs-debug/main/__/SDL2/src/main/android/SDL_android_main.o: \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/src/../SDL2/src/main/android/SDL_android_main.c \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/src/../SDL2/include/SDL_config.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/src/../SDL2/include/SDL_platform.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/src/../SDL2/include/begin_code.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/src/../SDL2/include/close_code.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/src/../SDL2/include/SDL_config_android.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/src/../SDL2/include/SDL_main.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/src/../SDL2/include/SDL_stdinc.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/src/../SDL2/include/SDL_config.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/sys/types.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/stdint.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/sys/_types.h \
@@ -42,21 +43,21 @@ obj/local/armeabi/objs-debug/main/__/SDL2/src/main/android/SDL_android_main.o: \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/asm/page.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/jni.h
 
-jni/src/../SDL2/include/SDL_config.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/src/../SDL2/include/SDL_config.h:
 
-jni/src/../SDL2/include/SDL_platform.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/src/../SDL2/include/SDL_platform.h:
 
-jni/src/../SDL2/include/begin_code.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/src/../SDL2/include/begin_code.h:
 
-jni/src/../SDL2/include/close_code.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/src/../SDL2/include/close_code.h:
 
-jni/src/../SDL2/include/SDL_config_android.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/src/../SDL2/include/SDL_config_android.h:
 
-jni/src/../SDL2/include/SDL_main.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/src/../SDL2/include/SDL_main.h:
 
-jni/src/../SDL2/include/SDL_stdinc.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/src/../SDL2/include/SDL_stdinc.h:
 
-jni/src/../SDL2/include/SDL_config.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/src/../SDL2/include/SDL_config.h:
 
 /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/sys/types.h:
 

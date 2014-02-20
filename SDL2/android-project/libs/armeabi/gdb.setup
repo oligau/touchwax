@@ -1,2 +1,2 @@
-set solib-search-path ./obj/local/armeabi
-directory /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include jni/SDL/include jni/lo/lo jni/src/../SDL2/include jni/src/../SDL2/android-project/jni/lo/ /home/oligau/bin/android-ndk-r9b/sources/cxx-stl/system
+set solib-search-path /home/oligau/documents/devel/touchwax/SDL2/android-project/obj/local/armeabi
+directory /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/SDL/include /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/src/../SDL2/include /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/src/../lo /home/oligau/bin/android-ndk-r9b/sources/cxx-stl/system

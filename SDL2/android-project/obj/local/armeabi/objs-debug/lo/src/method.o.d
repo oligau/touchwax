@@ -1,4 +1,5 @@
-obj/local/armeabi/objs-debug/lo/src/method.o: jni/lo/src/method.c \
+/home/oligau/documents/devel/touchwax/SDL2/android-project/obj/local/armeabi/objs-debug/lo/src/method.o: \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/src/method.c \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/stdio.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/sys/cdefs.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/sys/cdefs_elf.h \
@@ -16,7 +17,7 @@ obj/local/armeabi/objs-debug/lo/src/method.o: jni/lo/src/method.c \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/linux/types.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/machine/kernel.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/sys/sysmacros.h \
- jni/lo/src/lo_types_internal.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/src/lo_types_internal.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/poll.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/linux/poll.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/asm/poll.h \
@@ -60,9 +61,14 @@ obj/local/armeabi/objs-debug/lo/src/method.o: jni/lo/src/method.c \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/asm-generic/signal.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/asm/sigcontext.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/sched.h \
- jni/lo/lo/lo_osc_types.h jni/lo/lo/lo.h jni/lo/lo/lo_endian.h \
- jni/lo/lo/lo_types.h jni/lo/lo/lo_errors.h jni/lo/lo/lo_lowlevel.h \
- jni/lo/lo/lo_serverthread.h jni/lo/lo/lo_macros.h
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_osc_types.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_endian.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_types.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_errors.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_lowlevel.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_serverthread.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_macros.h
 
 /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/stdio.h:
 
@@ -98,7 +104,7 @@ obj/local/armeabi/objs-debug/lo/src/method.o: jni/lo/src/method.c \
 
 /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/sys/sysmacros.h:
 
-jni/lo/src/lo_types_internal.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/src/lo_types_internal.h:
 
 /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/poll.h:
 
@@ -186,18 +192,18 @@ jni/lo/src/lo_types_internal.h:
 
 /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/sched.h:
 
-jni/lo/lo/lo_osc_types.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_osc_types.h:
 
-jni/lo/lo/lo.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo.h:
 
-jni/lo/lo/lo_endian.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_endian.h:
 
-jni/lo/lo/lo_types.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_types.h:
 
-jni/lo/lo/lo_errors.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_errors.h:
 
-jni/lo/lo/lo_lowlevel.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_lowlevel.h:
 
-jni/lo/lo/lo_serverthread.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_serverthread.h:
 
-jni/lo/lo/lo_macros.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_macros.h:

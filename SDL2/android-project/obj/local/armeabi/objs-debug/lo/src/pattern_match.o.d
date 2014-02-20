@@ -1,5 +1,7 @@
-obj/local/armeabi/objs-debug/lo/src/pattern_match.o: \
- jni/lo/src/pattern_match.c jni/lo/lo/lo.h jni/lo/lo/lo_endian.h \
+/home/oligau/documents/devel/touchwax/SDL2/android-project/obj/local/armeabi/objs-debug/lo/src/pattern_match.o: \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/src/pattern_match.c \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_endian.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/sys/types.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/stdint.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/sys/_types.h \
@@ -33,15 +35,18 @@ obj/local/armeabi/objs-debug/lo/src/pattern_match.o: \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/linux/in6.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/linux/ipv6.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/netinet/in6.h \
- jni/lo/lo/lo_types.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_types.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/netdb.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/sys/socket.h \
- jni/lo/lo/lo_osc_types.h jni/lo/lo/lo_errors.h jni/lo/lo/lo_lowlevel.h \
- jni/lo/lo/lo_serverthread.h jni/lo/lo/lo_macros.h
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_osc_types.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_errors.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_lowlevel.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_serverthread.h \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_macros.h
 
-jni/lo/lo/lo.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo.h:
 
-jni/lo/lo/lo_endian.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_endian.h:
 
 /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/sys/types.h:
 
@@ -109,18 +114,18 @@ jni/lo/lo/lo_endian.h:
 
 /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/netinet/in6.h:
 
-jni/lo/lo/lo_types.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_types.h:
 
 /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/netdb.h:
 
 /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/sys/socket.h:
 
-jni/lo/lo/lo_osc_types.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_osc_types.h:
 
-jni/lo/lo/lo_errors.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_errors.h:
 
-jni/lo/lo/lo_lowlevel.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_lowlevel.h:
 
-jni/lo/lo/lo_serverthread.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_serverthread.h:
 
-jni/lo/lo/lo_macros.h:
+/home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/lo/lo_macros.h:

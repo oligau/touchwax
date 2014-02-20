@@ -1,4 +1,5 @@
-obj/local/armeabi/objs-debug/lo/src/version.o: jni/lo/src/version.c \
+/home/oligau/documents/devel/touchwax/SDL2/android-project/obj/local/armeabi/objs-debug/lo/src/version.o: \
+ /home/oligau/documents/devel/touchwax/SDL2/android-project/jni/lo/src/version.c \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/stdio.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/sys/cdefs.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/sys/cdefs_elf.h \
