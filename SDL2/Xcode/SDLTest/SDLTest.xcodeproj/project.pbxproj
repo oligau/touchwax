@@ -377,6 +377,14 @@
 		00794EF009D23739003FC8A1 /* utf8.txt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 00794E6309D20839003FC8A1 /* utf8.txt */; };
 		00794EF709D237DE003FC8A1 /* moose.dat in CopyFiles */ = {isa = PBXBuildFile; fileRef = 00794E5E09D20839003FC8A1 /* moose.dat */; };
 		453774A5120915E3002F0F45 /* testshape.c in Sources */ = {isa = PBXBuildFile; fileRef = 453774A4120915E3002F0F45 /* testshape.c */; };
+		6709C07818B3A16A004DC097 /* button.c in Sources */ = {isa = PBXBuildFile; fileRef = 6709C07018B3A16A004DC097 /* button.c */; };
+		6709C07918B3A16A004DC097 /* closeup.c in Sources */ = {isa = PBXBuildFile; fileRef = 6709C07118B3A16A004DC097 /* closeup.c */; };
+		6709C07A18B3A16A004DC097 /* fader.c in Sources */ = {isa = PBXBuildFile; fileRef = 6709C07218B3A16A004DC097 /* fader.c */; };
+		6709C07B18B3A16A004DC097 /* interface.c in Sources */ = {isa = PBXBuildFile; fileRef = 6709C07318B3A16A004DC097 /* interface.c */; };
+		6709C07C18B3A16A004DC097 /* osc.c in Sources */ = {isa = PBXBuildFile; fileRef = 6709C07418B3A16A004DC097 /* osc.c */; };
+		6709C07D18B3A16A004DC097 /* overview.c in Sources */ = {isa = PBXBuildFile; fileRef = 6709C07518B3A16A004DC097 /* overview.c */; };
+		6709C07E18B3A16A004DC097 /* touchwax.c in Sources */ = {isa = PBXBuildFile; fileRef = 6709C07618B3A16A004DC097 /* touchwax.c */; };
+		6709C07F18B3A16A004DC097 /* track.c in Sources */ = {isa = PBXBuildFile; fileRef = 6709C07718B3A16A004DC097 /* track.c */; };
 		BBFC08C0164C6862003E6A99 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 002F33A709CA188600EBEB88 /* Cocoa.framework */; };
 		BBFC08C1164C6862003E6A99 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 002A863B10730545007319AE /* CoreAudio.framework */; };
 		BBFC08C2164C6862003E6A99 /* ForceFeedback.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 002A863C10730545007319AE /* ForceFeedback.framework */; };
@@ -1104,6 +1112,14 @@
 		092D6D75FFB313BB7F000001 /* testlock.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = testlock.c; path = ../../test/testlock.c; sourceTree = SOURCE_ROOT; };
 		4537749212091504002F0F45 /* testshape */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = testshape; sourceTree = BUILT_PRODUCTS_DIR; };
 		453774A4120915E3002F0F45 /* testshape.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = testshape.c; path = ../../test/testshape.c; sourceTree = SOURCE_ROOT; };
+		6709C07018B3A16A004DC097 /* button.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = button.c; path = ../../../touchwax/button.c; sourceTree = "<group>"; };
+		6709C07118B3A16A004DC097 /* closeup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = closeup.c; path = ../../../touchwax/closeup.c; sourceTree = "<group>"; };
+		6709C07218B3A16A004DC097 /* fader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fader.c; path = ../../../touchwax/fader.c; sourceTree = "<group>"; };
+		6709C07318B3A16A004DC097 /* interface.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = interface.c; path = ../../../touchwax/interface.c; sourceTree = "<group>"; };
+		6709C07418B3A16A004DC097 /* osc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = osc.c; path = ../../../touchwax/osc.c; sourceTree = "<group>"; };
+		6709C07518B3A16A004DC097 /* overview.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = overview.c; path = ../../../touchwax/overview.c; sourceTree = "<group>"; };
+		6709C07618B3A16A004DC097 /* touchwax.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = touchwax.c; path = ../../../touchwax/touchwax.c; sourceTree = "<group>"; };
+		6709C07718B3A16A004DC097 /* track.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = track.c; path = ../../../touchwax/track.c; sourceTree = "<group>"; };
 		BBFC088E164C6820003E6A99 /* testgamecontroller.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = testgamecontroller.c; path = ../../test/testgamecontroller.c; sourceTree = "<group>"; };
 		BBFC08CD164C6862003E6A99 /* testgamecontroller */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = testgamecontroller; sourceTree = BUILT_PRODUCTS_DIR; };
 		BEC566B60761D90300A33029 /* checkkeys */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = checkkeys; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1972,6 +1988,14 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				6709C07018B3A16A004DC097 /* button.c */,
+				6709C07118B3A16A004DC097 /* closeup.c */,
+				6709C07218B3A16A004DC097 /* fader.c */,
+				6709C07318B3A16A004DC097 /* interface.c */,
+				6709C07418B3A16A004DC097 /* osc.c */,
+				6709C07518B3A16A004DC097 /* overview.c */,
+				6709C07618B3A16A004DC097 /* touchwax.c */,
+				6709C07718B3A16A004DC097 /* track.c */,
 				092D6D10FFB30A2C7F000001 /* checkkeys.c */,
 				083E4872006D84C97F000001 /* loopwave.c */,
 				0017958F1074216E00F5D044 /* testatomic.c */,
@@ -2832,7 +2856,7 @@
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0500;
 			};
 			buildConfigurationList = 001B5A0C08BDB826006539E9 /* Build configuration list for PBXProject "SDLTest" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -2956,7 +2980,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6709C07B18B3A16A004DC097 /* interface.c in Sources */,
+				6709C07D18B3A16A004DC097 /* overview.c in Sources */,
+				6709C07918B3A16A004DC097 /* closeup.c in Sources */,
+				6709C07F18B3A16A004DC097 /* track.c in Sources */,
 				0017972810742FB900F5D044 /* testgl2.c in Sources */,
+				6709C07C18B3A16A004DC097 /* osc.c in Sources */,
+				6709C07A18B3A16A004DC097 /* fader.c in Sources */,
+				6709C07E18B3A16A004DC097 /* touchwax.c in Sources */,
+				6709C07818B3A16A004DC097 /* button.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3737,6 +3769,7 @@
 				);
 				GCC_OPTIMIZATION_LEVEL = 0;
 				HEADER_SEARCH_PATHS = ../../include;
+				ONLY_ACTIVE_ARCH = YES;
 			};
 			name = Debug;
 		};

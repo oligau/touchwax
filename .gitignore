@@ -1,3 +1,6 @@
+##Mac
+.DS_Store
+
 ##VisualC
 *.sdf
 *.tlog
@@ -58,6 +61,7 @@
 *.i*86
 *.x86_64
 *.hex
+touchwax
 
 ## Android
 # Built application files
@@ -73,6 +77,10 @@
 # Generated files
 bin/
 gen/
+build/
+*.unsuccessfulbuild
+*.d
+*.m
 
 # Gradle files
 .gradle/
