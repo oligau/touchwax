@@ -43,7 +43,7 @@ void track_add_ppm_block(unsigned char *ppm_block, int size)
 
 unsigned char track_get_ppm(struct track *tr, unsigned int sp)
 {
-  return tr->ppm[sp/TRACK_PPM_RES];
+  return tr->ppm[sp / TRACK_PPM_RES];
 }
 
 void track_toggle_play(int d)

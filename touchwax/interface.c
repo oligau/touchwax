@@ -223,7 +223,7 @@ void interface_loop(struct twinterface *twinterface)
                
         /* Handle system events */
         if (e.type == SDL_QUIT) {
-          printf("SDL_Quit event have been recevied\n");
+          printf("SDL_Quit event have been received\n");
           break;
         }
         

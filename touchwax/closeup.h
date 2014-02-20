@@ -8,6 +8,7 @@
 
 struct tile {
   int offset;
+  SDL_Rect rect;
   SDL_Surface *surface;
   SDL_Texture *texture; 
 };
@@ -22,15 +23,16 @@ struct closeup {
   int clicked;
   SDL_Renderer *renderer;
   struct track *tr;
-  struct tile *tile_prev;
-  struct tile *tile_current;
-  struct tile *tile_next;
+  
+  struct tile *tiles[5];
   
   pthread_t thread_tile_updater;
   int thread_tile_updater_done;
   int rendered_tile;
   int tile;
-  int modified;
+  int modified[5];
+  int last_pos;
+  int forward;
 };
 
 struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_Renderer *renderer);
