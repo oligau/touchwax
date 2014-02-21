@@ -25,7 +25,6 @@
 *.pch
 *.exp
 *.rep
-*.xdc
 *_manifest.rc
 *.bsc
 *.sbr
@@ -61,7 +60,6 @@
 *.i*86
 *.x86_64
 *.hex
-touchwax
 
 ## Android
 # Built application files
