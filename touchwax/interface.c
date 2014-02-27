@@ -39,7 +39,7 @@ void interface_update_closeup(struct twinterface *twinterface)
 }
 
 void interface_closeup_init(struct twinterface *twinterface)
-{        
+{     
     if(twinterface->closeup)
         closeup_free(twinterface->closeup);
     twinterface->closeup = closeup_init(0,
@@ -303,7 +303,7 @@ void interface_loop(struct twinterface *twinterface)
                     
           twinterface->renderedFrames++;
           
-          //printf("FPS:%f\n", (renderedFrames / (float) SDL_GetTicks())*1000);
+          //printf("FPS:%f\n", (twinterface->renderedFrames / (float) SDL_GetTicks())*1000);
           
           twinterface->redraw = 0;
       }

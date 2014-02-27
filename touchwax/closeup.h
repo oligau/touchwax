@@ -26,6 +26,7 @@ struct closeup {
   struct track *tr;
   
   struct tile *tiles[5];
+  struct tile *playhead;
   
   pthread_t thread_tile_updater;
   int thread_tile_updater_done;
@@ -49,5 +50,7 @@ void closeup_handle_events(struct closeup *closeup, SDL_Event event);
 void closeup_draw_waveform(struct closeup *closeup, SDL_Surface *surface, int offset, SDL_Color col);
 void closeup_show(struct closeup *closeup);
 void closeup_free(struct closeup *closeup);
+
+Uint32 closeup_palette(SDL_Surface *sf, SDL_Color *col);
 
 #endif

@@ -24,7 +24,7 @@
 static SDL_Color elapsed_col = {0, 32, 255, 255},  // xwax original
                   prev_col = {0, 255, 32, 255}, 
                   next_col = {255, 32, 0, 255}, // night vision mode
-                 needle_col = {255, 255, 255, 255};
+                 needle_col = {153, 153, 153, 255};
 
 struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_Renderer *renderer)
 {
@@ -82,11 +82,12 @@ struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_R
   closeup->tiles[1] = (struct tile *) malloc(sizeof(struct tile));  
   closeup->tiles[2] = (struct tile *) malloc(sizeof(struct tile));
   closeup->tiles[3] = (struct tile *) malloc(sizeof(struct tile));
-  closeup->tiles[4] = (struct tile *) malloc(sizeof(struct tile));  
+  closeup->tiles[4] = (struct tile *) malloc(sizeof(struct tile)); 
+  closeup->playhead = (struct tile *) malloc(sizeof(struct tile));    
   
   /* Initiate tiles destination rects */
   closeup->tiles[0]->rect.x = closeup->rect.x;
-  closeup->tiles[0]->rect.y = closeup->padded_h * -2;
+  closeup->tiles[0]->rect.y = closeup->padded_h * -2 - closeup->rect.h/2;
   closeup->tiles[0]->rect.w = closeup->rect.w;
   closeup->tiles[0]->rect.h = closeup->padded_h;
   closeup->tiles[1]->rect.x = closeup->rect.x;
@@ -94,7 +95,7 @@ struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_R
   closeup->tiles[1]->rect.w = closeup->rect.w;
   closeup->tiles[1]->rect.h = closeup->padded_h;
   closeup->tiles[2]->rect.x = closeup->rect.x;
-  closeup->tiles[2]->rect.y = closeup->padded_h * 0;
+  closeup->tiles[2]->rect.y = closeup->padded_h * 0 - closeup->rect.h/2;
   closeup->tiles[2]->rect.w = closeup->rect.w;
   closeup->tiles[2]->rect.h = closeup->padded_h;
   closeup->tiles[3]->rect.x = closeup->rect.x;
@@ -105,6 +106,10 @@ struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_R
   closeup->tiles[4]->rect.y = closeup->padded_h * 2;
   closeup->tiles[4]->rect.w = closeup->rect.w;
   closeup->tiles[4]->rect.h = closeup->padded_h;
+  closeup->playhead->rect.x = closeup->rect.x;
+  closeup->playhead->rect.y = closeup->rect.h / 2;
+  closeup->playhead->rect.w = closeup->rect.w;
+  closeup->playhead->rect.h = 1;  
   
   closeup->tile_index[0] = 0;
   
@@ -124,7 +129,9 @@ struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_R
   closeup->tiles[3]->surface = SDL_CreateRGBSurface(0, CLOSEUP_WAVEFORM_WIDTH, closeup->padded_h, 32,
                                    rmask, gmask, bmask, amask);
   closeup->tiles[4]->surface = SDL_CreateRGBSurface(0, CLOSEUP_WAVEFORM_WIDTH, closeup->padded_h, 32,
-                                   rmask, gmask, bmask, amask);                                    
+                                   rmask, gmask, bmask, amask);
+  closeup->playhead->surface = SDL_CreateRGBSurface(0, CLOSEUP_WAVEFORM_WIDTH, 1, 32,
+                                   rmask, gmask, bmask, amask);                                                                       
 
   /* create textures that links the surface to gpu */
   closeup->tiles[0]->texture = SDL_CreateTexture(closeup->renderer, SDL_PIXELFORMAT_ARGB8888, 
@@ -137,7 +144,11 @@ struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_R
                     SDL_TEXTUREACCESS_STREAMING, CLOSEUP_WAVEFORM_WIDTH, closeup->padded_h);                
   closeup->tiles[4]->texture = SDL_CreateTexture(closeup->renderer, SDL_PIXELFORMAT_ARGB8888, 
                     SDL_TEXTUREACCESS_STREAMING, CLOSEUP_WAVEFORM_WIDTH, closeup->padded_h);
+  closeup->playhead->texture = SDL_CreateTexture(closeup->renderer, SDL_PIXELFORMAT_ARGB8888, 
+                    SDL_TEXTUREACCESS_STREAMING, CLOSEUP_WAVEFORM_WIDTH, 1);                    
 
+  SDL_FillRect(closeup->playhead->surface, NULL, closeup_palette(closeup->playhead->surface, &needle_col));
+  SDL_UpdateTexture(closeup->playhead->texture, NULL, closeup->playhead->surface->pixels, closeup->playhead->surface->pitch);    
 
   closeup_update_init(closeup);
   closeup_start_tile_updater_thread(closeup);
@@ -252,6 +263,11 @@ void closeup_draw_waveform(struct closeup *closeup, SDL_Surface *surface, int of
 
     } 
     printf("drawn %i samples at offset:%i on surface: %p\n", r, offset, surface);
+    
+    #ifdef __ANDROID__
+    __android_log_print(ANDROID_LOG_DEBUG, "closeup.c", 
+                    "drawn %i samples at offset:%i on surface: %p\n", r, offset, surface);
+#endif 
     
 }
 
@@ -411,20 +427,13 @@ void closeup_show(struct closeup *closeup)
   /* Determine direction */
   closeup->forward = (pos - closeup->last_pos) >= 0;
   closeup->last_pos = pos;
-      
-  /* Source texture is always complete tile */    
-  SDL_Rect source;
-  source.x = closeup->rect.x;
-  source.y = closeup->rect.y;
-  source.w = CLOSEUP_WAVEFORM_WIDTH;
-  source.h = closeup->padded_h;
-  
+         
   /* Destination for texture is calculated after position */
-  closeup->tiles[0]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * -2);
-  closeup->tiles[1]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * -1);
-  closeup->tiles[2]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 0);
-  closeup->tiles[3]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 1);
-  closeup->tiles[4]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 2);
+  closeup->tiles[0]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * -2) - closeup->rect.h/2;
+  closeup->tiles[1]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * -1) - closeup->rect.h/2;
+  closeup->tiles[2]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 0)  - closeup->rect.h/2;
+  closeup->tiles[3]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 1) - closeup->rect.h/2;
+  closeup->tiles[4]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 2) - closeup->rect.h/2;
 
   if(closeup->nb_tile) {
     
@@ -465,15 +474,17 @@ void closeup_show(struct closeup *closeup)
     closeup->tile_index[4] = ((current_tile % 5) + 4) % 5;
     
     if(closeup->tile_index[0] >= 0)
-      SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[0]]->texture, &source, &closeup->tiles[0]->rect);
+      SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[0]]->texture, NULL, &closeup->tiles[0]->rect);
     if(closeup->tile_index[1] >= 0)
-      SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[1]]->texture, &source, &closeup->tiles[1]->rect);
+      SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[1]]->texture, NULL, &closeup->tiles[1]->rect);
     if(closeup->tile_index[2] >= 0)    
-      SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[2]]->texture, &source, &closeup->tiles[2]->rect);
+      SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[2]]->texture, NULL, &closeup->tiles[2]->rect);
     if(closeup->tile_index[3] >= 0)    
-      SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[3]]->texture, &source, &closeup->tiles[3]->rect);
+      SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[3]]->texture, NULL, &closeup->tiles[3]->rect);
     if(closeup->tile_index[4] >= 0)    
-      SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[4]]->texture, &source, &closeup->tiles[4]->rect);
+      SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[4]]->texture, NULL, &closeup->tiles[4]->rect);
+      
+    SDL_RenderCopy(closeup->renderer, closeup->playhead->texture, NULL, &closeup->playhead->rect);      
     
     //printf(" tile0: %i\n tile1: %i\n tile2: %i\n tile3: %i\n tile4: %i\n",
     //tile_index[0],
@@ -557,7 +568,7 @@ void closeup_free(struct closeup *closeup)
   //}
   
   closeup->thread_tile_updater_done = 1;
-  //pthread_join(closeup->thread_tile_updater, NULL);
+  pthread_join(closeup->thread_tile_updater, NULL);
   
   int i;
   for(i = 0; i < 5; ++i) {
@@ -566,6 +577,12 @@ void closeup_free(struct closeup *closeup)
     free(closeup->tiles[i]);
     
   }
+  free(closeup->playhead);
  
   free(closeup);
+}
+
+Uint32 closeup_palette(SDL_Surface *sf, SDL_Color *col)
+{
+    return SDL_MapRGBA(sf->format, col->r, col->g, col->b, col->a);
 }
