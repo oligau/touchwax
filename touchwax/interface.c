@@ -22,8 +22,21 @@
 
 /* Colors used */
 
-//static SDL_Color background_col = {31, 4, 0, 255};
-static SDL_Color background_col = {31, 4, 255, 255};
+static SDL_Color background_col = {31, 4, 0, 255};
+//static SDL_Color background_col = {31, 4, 255, 255};
+
+void interface_update_overview(struct twinterface *twinterface)
+{
+    if(twinterface->overview)
+        overview_free(twinterface->overview);
+    twinterface->overview = overview_init(0,
+                           0, 
+                           100,
+                           twinterface->viewport.h, 
+                           &tracks[0],
+                           twinterface->renderer);
+}
+
 
 void interface_update_closeup(struct twinterface *twinterface)
 {
@@ -52,7 +65,15 @@ void interface_closeup_init(struct twinterface *twinterface)
 
 void interface_widgets_init(struct twinterface *twinterface)
 {
-    interface_closeup_init(twinterface);
+    if(twinterface->overview)
+        overview_free(twinterface->overview);
+    twinterface->overview = overview_init(0,
+                           0, 
+                           100,
+                           twinterface->viewport.h, 
+                           &tracks[0],
+                           twinterface->renderer);
+    interface_closeup_init(twinterface);                           
     if(twinterface->btn)
         button_free(twinterface->btn);
     twinterface->btn = button_init(twinterface->viewport.w-100,
@@ -99,6 +120,7 @@ struct twinterface*interface_init()
     struct twinterface *twinterface;
     twinterface = (struct twinterface*) malloc(sizeof(struct twinterface));
     twinterface->closeup = 0;
+    twinterface->overview = 0;    
     twinterface->btn = 0;
     twinterface->fader = 0;
     twinterface->redraw = 0;
@@ -125,7 +147,6 @@ struct twinterface*interface_init()
     }	
     
     twinterface->renderer = SDL_CreateRenderer(twinterface->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-//    interface->renderer = SDL_CreateRenderer(interface->window, -1, 0);
     if(!twinterface->renderer)
     {
       SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Render creation for surface fail : %s\n",SDL_GetError());
@@ -293,7 +314,7 @@ void interface_loop(struct twinterface *twinterface)
           
           /* Render widgets on surface */
           closeup_show(twinterface->closeup);  
-          //overview_show(overview, surface, &tracks[0]);
+          overview_show(twinterface->overview);
           button_show(twinterface->btn);
           fader_show(twinterface->fader);
                
@@ -320,11 +341,12 @@ void interface_free(struct twinterface *twinterface)
 {
     button_free(twinterface->btn);
     fader_free(twinterface->fader);
-    //overview_free(twinterface->overview);
     closeup_free(twinterface->closeup);
+    //overview_free(twinterface->overview);
     
     SDL_FreeSurface(twinterface->surface);
     SDL_DestroyTexture(twinterface->texture);
+    
     SDL_DestroyRenderer(twinterface->renderer);
     SDL_DestroyWindow(twinterface->window);
     SDL_RemoveTimer(twinterface->timer);

@@ -338,7 +338,7 @@ void closeup_update(struct closeup *closeup)
         
         closeup->tiles[closeup->tile_index[0]]->offset = pos - (closeup->padded_h * 2);
         closeup->tiles[closeup->tile_index[0]]->tile_no = current_tile - 21;
-        closeup_draw_waveform(closeup, closeup->tiles[closeup->tile_index[0]]->surface, closeup->tiles[closeup->tile_index[0]]->offset, next_col);
+        closeup_draw_waveform(closeup, closeup->tiles[closeup->tile_index[0]]->surface, closeup->tiles[closeup->tile_index[0]]->offset, elapsed_col);
         ++closeup->modified[closeup->tile_index[0]]; // Inform render thread that we have a new tile to copy to gpu
         
       }         
@@ -349,7 +349,7 @@ void closeup_update(struct closeup *closeup)
         
         closeup->tiles[closeup->tile_index[1]]->offset = pos - (closeup->padded_h * 1);
         closeup->tiles[closeup->tile_index[1]]->tile_no = current_tile - 1;
-        closeup_draw_waveform(closeup, closeup->tiles[closeup->tile_index[1]]->surface, closeup->tiles[closeup->tile_index[1]]->offset, next_col);
+        closeup_draw_waveform(closeup, closeup->tiles[closeup->tile_index[1]]->surface, closeup->tiles[closeup->tile_index[1]]->offset, elapsed_col);
         ++closeup->modified[closeup->tile_index[1]]; // Inform render thread that we have a new tile to copy to gpu
         
       }          
@@ -360,7 +360,7 @@ void closeup_update(struct closeup *closeup)
         
         closeup->tiles[closeup->tile_index[2]]->offset = pos;
         closeup->tiles[closeup->tile_index[2]]->tile_no = current_tile;
-        closeup_draw_waveform(closeup, closeup->tiles[closeup->tile_index[2]]->surface, closeup->tiles[closeup->tile_index[2]]->offset, next_col);
+        closeup_draw_waveform(closeup, closeup->tiles[closeup->tile_index[2]]->surface, closeup->tiles[closeup->tile_index[2]]->offset, elapsed_col);
         ++closeup->modified[closeup->tile_index[2]]; // Inform render thread that we have a new tile to copy to gpu
         
       }            
@@ -371,7 +371,7 @@ void closeup_update(struct closeup *closeup)
         
         closeup->tiles[closeup->tile_index[3]]->offset = pos + (closeup->padded_h * 1);
         closeup->tiles[closeup->tile_index[3]]->tile_no = current_tile + 1;
-        closeup_draw_waveform(closeup, closeup->tiles[closeup->tile_index[3]]->surface, closeup->tiles[closeup->tile_index[3]]->offset, next_col);
+        closeup_draw_waveform(closeup, closeup->tiles[closeup->tile_index[3]]->surface, closeup->tiles[closeup->tile_index[3]]->offset, elapsed_col);
         ++closeup->modified[closeup->tile_index[3]]; // Inform render thread that we have a new tile to copy to gpu
         
       }      
@@ -382,7 +382,7 @@ void closeup_update(struct closeup *closeup)
         
         closeup->tiles[closeup->tile_index[4]]->offset = pos + (closeup->padded_h * 2);
         closeup->tiles[closeup->tile_index[4]]->tile_no = current_tile + 2;
-        closeup_draw_waveform(closeup, closeup->tiles[closeup->tile_index[4]]->surface, closeup->tiles[closeup->tile_index[4]]->offset, next_col);
+        closeup_draw_waveform(closeup, closeup->tiles[closeup->tile_index[4]]->surface, closeup->tiles[closeup->tile_index[4]]->offset, elapsed_col);
         ++closeup->modified[closeup->tile_index[4]]; // Inform render thread that we have a new tile to copy to gpu
         
       }
@@ -429,11 +429,11 @@ void closeup_show(struct closeup *closeup)
   closeup->last_pos = pos;
          
   /* Destination for texture is calculated after position */
-  closeup->tiles[0]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * -2) - closeup->rect.h/2;
-  closeup->tiles[1]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * -1) - closeup->rect.h/2;
-  closeup->tiles[2]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 0)  - closeup->rect.h/2;
-  closeup->tiles[3]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 1) - closeup->rect.h/2;
-  closeup->tiles[4]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 2) - closeup->rect.h/2;
+  closeup->tiles[0]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * -2) + closeup->rect.h/2;
+  closeup->tiles[1]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * -1) + closeup->rect.h/2;
+  closeup->tiles[2]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 0)  + closeup->rect.h/2;
+  closeup->tiles[3]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 1) + closeup->rect.h/2;
+  closeup->tiles[4]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 2) + closeup->rect.h/2;
 
   if(closeup->nb_tile) {
     

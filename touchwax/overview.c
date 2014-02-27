@@ -4,7 +4,7 @@
 static SDL_Color elapsed_col = {0, 32, 255, 255},
                  needle_col = {255, 255, 255, 255};
                  
-struct overview *overview_init(int x, int y, int w, int h)
+struct overview *overview_init(int x, int y, int w, int h, struct track *tr, SDL_Renderer *renderer)
 {
   struct overview *overview;
   overview = (struct overview *) malloc(sizeof(struct overview));
@@ -13,7 +13,31 @@ struct overview *overview_init(int x, int y, int w, int h)
   overview->rect.w = w;
   overview->rect.h = h;
   overview->clicked = 0;
+  overview->tr = tr;  
+  overview->renderer = renderer;
+  
+  /* SDL interprets each pixel as a 32-bit number, so our masks must depend
+    on the endianness (byte order) of the machine */
+  Uint32 rmask, gmask, bmask, amask;  
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+  rmask = 0xff000000;
+  gmask = 0x00ff0000;
+  bmask = 0x0000ff00;
+  amask = 0x000000ff;
+#else
+  rmask = 0x000000ff;
+  gmask = 0x0000ff00;
+  bmask = 0x00ff0000;
+  amask = 0xff000000;
+#endif  
+  overview->surface = SDL_CreateRGBSurface(0, w, h, 32,
+                                   rmask, gmask, bmask, amask);
+  overview->texture = SDL_CreateTexture(overview->renderer, SDL_PIXELFORMAT_ARGB8888, 
+                    SDL_TEXTUREACCESS_STREAMING, w, h); 
+  overview_draw(overview);
+  SDL_UpdateTexture(overview->texture, NULL, overview->surface->pixels, overview->surface->pitch);    
 
+  printf("overview inited.\n");
   return overview;
 }
 
@@ -65,11 +89,17 @@ int overview_handle_events(struct overview *overview, SDL_Event event)
     return 0;
 }
   
+  
+void overview_show(struct overview *overview)
+{
+    SDL_RenderCopy(overview->renderer, overview->texture, NULL, &overview->rect);      
+
+}
+  
 /*
  * Draw the track overview
  */
-void overview_show(struct overview *overview, SDL_Surface *surface, 
-                    struct track *tr)
+void overview_draw(struct overview *overview)
 {
     int x, y, w, h, r, position, current_position, scale;
     size_t bytes_per_pixel, pitch;
@@ -79,16 +109,16 @@ void overview_show(struct overview *overview, SDL_Surface *surface,
     y = overview->rect.y;
     w = overview->rect.w;
     h = overview->rect.h;    
-    position = (int) (tr->position * tr->rate);
-    scale = tr->scale;
+    position = (int) (overview->tr->position * overview->tr->rate);
+    scale = overview->tr->scale;
     
 
-    pixels = (Uint8 *) surface->pixels;
-    bytes_per_pixel = surface->format->BytesPerPixel;
-    pitch = surface->pitch;
+    pixels = (Uint8 *) overview->surface->pixels;
+    bytes_per_pixel = overview->surface->format->BytesPerPixel;
+    pitch = overview->surface->pitch;
     
-    if (tr->length)
-        current_position = (long long)position * h / tracks[0].length;
+    if (overview->tr->length)
+        current_position = (long long)position * h / overview->tr->length;
     else
         current_position = 0;    
 
@@ -104,10 +134,13 @@ void overview_show(struct overview *overview, SDL_Surface *surface,
 
         //sp = position - (position % (1 << scale))
         //    + ((r - h / 2) << scale);
-        sp = tracks[0].length * r / h;
-
-        if (sp < tr->length && sp > 0)
-            width = track_get_ppm(tr, sp) * w / 256;
+        sp = r * (overview->tr->length / h);
+        //sp = 100;
+        
+        printf("overview sp: %i length: %i\n", sp, overview->tr->length);
+        
+        if (sp < overview->tr->length && sp > 0)
+            width = track_get_ppm(overview->tr, sp) * w / 100;
         else
             width = 0;
 
@@ -127,7 +160,7 @@ void overview_show(struct overview *overview, SDL_Surface *surface,
          * for each column */
         p = pixels + (y + r) * pitch + x * bytes_per_pixel;
 
-        c = w/2;
+        c = w;
         while (c > width) {
             p[0] = col.b >> fade;
             p[1] = col.g >> fade;
@@ -146,27 +179,29 @@ void overview_show(struct overview *overview, SDL_Surface *surface,
         /* Right waveform */
         /* Get a pointer to the beginning of the row, and increment it
          * for each column */
-        p = pixels + (y + r) * pitch + x * bytes_per_pixel;        
+        //p = pixels + (y + r) * pitch + x * bytes_per_pixel;        
         
-        c = w;
-        while (c > width) {
-            p[0] = col.b >> fade;
-            p[1] = col.g >> fade;
-            p[2] = col.r >> fade;
-            p -= bytes_per_pixel;
-            c--;
-        }
-        while (c) {
-            p[0] = col.b;
-            p[1] = col.g;
-            p[2] = col.r;
-            p -= bytes_per_pixel;            
-            c--;
-        }
+        //c = w;
+        //while (c > width) {
+            //p[0] = col.b >> fade;
+            //p[1] = col.g >> fade;
+            //p[2] = col.r >> fade;
+            //p -= bytes_per_pixel;
+            //c--;
+        //}
+        //while (c) {
+            //p[0] = col.b;
+            //p[1] = col.g;
+            //p[2] = col.r;
+            //p -= bytes_per_pixel;            
+            //c--;
+        //}
     }
 }
 
 void overview_free(struct overview *overview)
 {
+  SDL_FreeSurface(overview->surface);
+  SDL_DestroyTexture(overview->texture);  
   free(overview);
 }

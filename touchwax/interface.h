@@ -23,6 +23,7 @@ struct twinterface{
   
 };
 
+void interface_update_overview(struct twinterface *twinterface);
 void interface_closeup_init(struct twinterface *twinterface);
 void interface_widgets_init(struct twinterface *twinterface);
 struct twinterface*interface_init();

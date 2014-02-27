@@ -53,7 +53,7 @@ int osc_init(struct twinterface *twinterface)
     lo_server_thread_add_method(st, "/touchwax/ppm", "bi", ppm_handler, NULL);
 
     /* add method that will match any path and args */
-    lo_server_thread_add_method(st, "/touchwax/track_load", "ssi", track_load_handler, NULL);
+    lo_server_thread_add_method(st, "/touchwax/track_load", "ssii", track_load_handler, NULL);
 
     /* add method that will match any path and args */
     lo_server_thread_add_method(st, "/touchwax/position", "f", pos_handler, NULL);
@@ -141,7 +141,9 @@ int track_load_handler(const char *path, const char *types, lo_arg ** argv,
     tracks[0].artist = (char *) argv[0];
     tracks[0].title = (char *) argv[1];
     tracks[0].rate = argv[2]->i;
+    tracks[0].length = argv[3]->i;
     
+    interface_update_overview(osc->twinterface);    
     interface_update_closeup(osc->twinterface);
 
 #ifdef __ANDROID__
@@ -169,6 +171,7 @@ int ppm_handler(const char *path, const char *types, lo_arg ** argv,
     unsigned char *bdata = (unsigned char *) lo_blob_dataptr(blob);
     
     tracks[0].length = (unsigned int) argv[1]->i;
+    printf("track.length: %i\n", tracks[0].length);
     
     track_add_ppm_block(bdata, size);
     
