@@ -4,6 +4,7 @@
 #include <pthread.h>
 #include "SDL.h"
 
+#include "interface.h"
 #include "track.h"
 
 struct tile {
@@ -24,6 +25,7 @@ struct closeup {
   int clicked;
   SDL_Renderer *renderer;
   struct track *tr;
+  struct twinterface *twinterface;
   
   struct tile *tiles[5];
   struct tile *playhead;
@@ -38,7 +40,7 @@ struct closeup {
   int tile_index[5];
 };
 
-struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_Renderer *renderer);
+struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_Renderer *renderer, struct twinterface *twinterface);
 void closeup_update_init(struct closeup *closeup);
 
 void closeup_start_tile_updater_thread(struct closeup *closeup);

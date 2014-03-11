@@ -3,7 +3,7 @@
 /* Colors used */
 static SDL_Color fader_col = {255, 0, 0, 255};
 
-struct fader *fader_init(int x, int y, int w, int h, int heigth, SDL_Renderer *renderer)
+struct fader *fader_init(int x, int y, int w, int h, int heigth, SDL_Renderer *renderer, struct twinterface *twinterface)
 {
   struct fader *fader;
   fader = (struct fader *) malloc(sizeof(struct fader));
@@ -15,6 +15,7 @@ struct fader *fader_init(int x, int y, int w, int h, int heigth, SDL_Renderer *r
   fader->heigth = heigth;
   fader->col = &fader_col;
   fader->renderer = renderer;
+  fader->twinterface = twinterface;
   
   /* create surface that holds the button */
   /* SDL interprets each pixel as a 32-bit number, so our masks must depend
@@ -85,8 +86,8 @@ int fader_handle_events(struct fader *fader, SDL_Event event, int heigth)
                 
                 //Send pitch information
                 fader_pitch(fader);
-                if(tracks[0].play)
-                    osc_send_pitch(tracks[0].pitch);
+                if(tracks[fader->twinterface->deck].play)
+                    osc_send_pitch(fader->twinterface->deck, tracks[fader->twinterface->deck].pitch);
                 
                 return 1;
             }
@@ -128,5 +129,5 @@ void fader_pitch(struct fader *fader)
     float min = 0.86f;
     float max = 1.16f;
     float pitch = y * (max-min) + min;
-    tracks[0].pitch = pitch;
+    tracks[fader->twinterface->deck].pitch = pitch;
 }

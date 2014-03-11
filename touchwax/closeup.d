@@ -19,4 +19,4 @@ closeup.o: closeup.c closeup.h /usr/include/SDL2/SDL.h \
  /usr/include/SDL2/SDL_log.h /usr/include/SDL2/SDL_messagebox.h \
  /usr/include/SDL2/SDL_power.h /usr/include/SDL2/SDL_render.h \
  /usr/include/SDL2/SDL_system.h /usr/include/SDL2/SDL_timer.h \
- /usr/include/SDL2/SDL_version.h track.h osc.h interface.h
+ /usr/include/SDL2/SDL_version.h interface.h track.h osc.h

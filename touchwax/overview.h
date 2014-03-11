@@ -14,8 +14,9 @@ struct overview {
   struct track *tr;  
 };
 
-struct overview *overview_init(int x, int y, int w, int h, struct track *tr, SDL_Renderer *renderer);
+struct overview *overview_init(int x, int y, int w, int h, struct track *tr, SDL_Renderer *renderer, struct twinterface *twinterface);
 int overview_handle_events(struct overview *overview, SDL_Event event);
+void overview_show(struct overview *overview);
 void overview_draw(struct overview *overview);
 void overview_free(struct overview *overview);
 

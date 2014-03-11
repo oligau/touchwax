@@ -17,14 +17,20 @@ struct twinterface{
   SDL_TimerID timer; 
   struct closeup *closeup;  
   struct overview *overview;  
-  struct button *btn;
+  struct button *btn_play;
+  struct button *btn_deck;
   struct fader *fader;
   int last_track_length;
+  int deck;
   
 };
 
+void interface_button_play_callback(struct twinterface *twinterface);
+void interface_button_deck_callback(struct twinterface *twinterface);
+
 void interface_update_overview(struct twinterface *twinterface);
 void interface_closeup_init(struct twinterface *twinterface);
+void interface_closeup_free(struct twinterface *twinterface);
 void interface_widgets_init(struct twinterface *twinterface);
 struct twinterface*interface_init();
 void interface_resize(struct twinterface *twinterface, int w, int h);

@@ -4,7 +4,7 @@
 static SDL_Color elapsed_col = {0, 32, 255, 255},
                  needle_col = {255, 255, 255, 255};
                  
-struct overview *overview_init(int x, int y, int w, int h, struct track *tr, SDL_Renderer *renderer)
+struct overview *overview_init(int x, int y, int w, int h, struct track *tr, SDL_Renderer *renderer, struct twinterface *twinterface)
 {
   struct overview *overview;
   overview = (struct overview *) malloc(sizeof(struct overview));
@@ -13,7 +13,7 @@ struct overview *overview_init(int x, int y, int w, int h, struct track *tr, SDL
   overview->rect.w = w;
   overview->rect.h = h;
   overview->clicked = 0;
-  overview->tr = tr;  
+  overview->tr = &tracks[twinterface->deck];  
   overview->renderer = renderer;
   
   /* SDL interprets each pixel as a 32-bit number, so our masks must depend
@@ -64,7 +64,7 @@ int overview_handle_events(struct overview *overview, SDL_Event event)
                 float pourcent = y / overview->rect.h;
                 tracks[0].position = tracks[0].length * pourcent;
 
-                osc_send_position(tracks[0].position);
+                osc_send_position(0, tracks[0].position);
                 //printf("x:%f y:%f\n", x, y);
             }
             
@@ -137,42 +137,44 @@ void overview_draw(struct overview *overview)
         sp = r * (overview->tr->length / h);
         //sp = 100;
         
-        printf("overview sp: %i length: %i\n", sp, overview->tr->length);
+        //printf("overview sp: %i length: %i\n", sp, overview->tr->length);
         
-        if (sp < overview->tr->length && sp > 0)
-            width = track_get_ppm(overview->tr, sp) * w / 100;
-        else
+        if (sp < overview->tr->length && sp > 0) {
+            width = track_get_ppm(overview->tr, sp) * w / 256;
+            //printf("width: %i\n", width);
+        } else {
             width = 0;
+        }
 
         /* Select the appropriate colour */
         //int sp_pos = tracks[0].position*tracks[0].rate;
         //printf("sp:%i sp_pos:%i\n", sp, sp_pos);
-        if (r == current_position) {
-            col = needle_col;
-            fade = 1;
-        } else {
+        //if (r == current_position) {
+            //col = needle_col;
+            //fade = 1;
+        //} else {
             col = elapsed_col;
             fade = 3;
-        }
+        //}
 
         /* Left waveform */
         /* Get a pointer to the beginning of the row, and increment it
          * for each column */
-        p = pixels + (y + r) * pitch + x * bytes_per_pixel;
+        p = pixels + (y + r) * pitch + (x + w) * bytes_per_pixel;
 
         c = w;
         while (c > width) {
             p[0] = col.b >> fade;
             p[1] = col.g >> fade;
             p[2] = col.r >> fade;
-            p += bytes_per_pixel;
+            p -= bytes_per_pixel;
             c--;
         }
         while (c) {
             p[0] = col.b;
             p[1] = col.g;
             p[2] = col.r;
-            p += bytes_per_pixel;            
+            p -= bytes_per_pixel;            
             c--;
         }
         

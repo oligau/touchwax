@@ -25,6 +25,22 @@
 static SDL_Color background_col = {31, 4, 0, 255};
 //static SDL_Color background_col = {31, 4, 255, 255};
 
+void interface_button_play_callback(struct twinterface *twinterface)
+{
+    track_toggle_play(twinterface->deck);
+}
+
+void interface_button_deck_callback(struct twinterface *twinterface)
+{
+    interface_closeup_free(twinterface);
+    
+    twinterface->deck = (twinterface->deck + 1) % 2;
+    fprintf(stderr, "interface_button_play_callback: switched to deck %i\n", twinterface->deck);
+    
+    interface_update_closeup(twinterface);
+    interface_update_overview(twinterface);
+}
+
 void interface_update_overview(struct twinterface *twinterface)
 {
     if(twinterface->overview)
@@ -34,20 +50,14 @@ void interface_update_overview(struct twinterface *twinterface)
                            100,
                            twinterface->viewport.h, 
                            &tracks[0],
-                           twinterface->renderer);
+                           twinterface->renderer,
+                           twinterface);
 }
 
 
 void interface_update_closeup(struct twinterface *twinterface)
 {
-    //if(twinterface->closeup)
-      //closeup_free(twinterface->closeup);
-    //twinterface->closeup = closeup_init(100,
-                           //0, 
-                           //twinterface->viewport.w - 100 - 100,
-                           //twinterface->viewport.h, 
-                           //&tracks[0],
-                           //twinterface->renderer);
+    interface_closeup_init(twinterface);
     printf("Updated closeup.\n");
 }
 
@@ -60,28 +70,44 @@ void interface_closeup_init(struct twinterface *twinterface)
                            twinterface->viewport.w,
                            twinterface->viewport.h, 
                            &tracks[0],
-                           twinterface->renderer);
+                           twinterface->renderer,
+                           twinterface);
 }
 
 void interface_widgets_init(struct twinterface *twinterface)
 {
-    if(twinterface->overview)
-        overview_free(twinterface->overview);
-    twinterface->overview = overview_init(0,
-                           0, 
-                           100,
-                           twinterface->viewport.h, 
-                           &tracks[0],
-                           twinterface->renderer);
-    interface_closeup_init(twinterface);                           
-    if(twinterface->btn)
-        button_free(twinterface->btn);
-    twinterface->btn = button_init(twinterface->viewport.w-100,
+    //if(twinterface->overview)
+        //overview_free(twinterface->overview);
+    //twinterface->overview = overview_init(0,
+                           //0, 
+                           //100,
+                           //twinterface->viewport.h, 
+                           //&tracks[0],
+                           //twinterface->renderer,
+                           //twinterface);
+                           
+    interface_closeup_init(twinterface);    
+                           
+    if(twinterface->btn_play)
+        button_free(twinterface->btn_play);
+    twinterface->btn_play = button_init(twinterface->viewport.w-100,
                       twinterface->viewport.h-100, 
                       100, 
                       100, 
                       "button.bmp",
-                      twinterface->renderer);
+                      twinterface->renderer,
+                      &interface_button_play_callback);
+                      
+    if(twinterface->btn_deck)
+        button_free(twinterface->btn_deck);
+    twinterface->btn_deck = button_init(twinterface->viewport.w-200,
+                      twinterface->viewport.h-100, 
+                      100, 
+                      100, 
+                      "button.bmp",
+                      twinterface->renderer,
+                      &interface_button_deck_callback);
+                      
     if(twinterface->fader)
         fader_free(twinterface->fader);                      
     twinterface->fader = fader_init(twinterface->viewport.w-100, 
@@ -89,7 +115,8 @@ void interface_widgets_init(struct twinterface *twinterface)
                        100, 
                        100, 
                        twinterface->viewport.h,
-                       twinterface->renderer);
+                       twinterface->renderer,
+                       twinterface);
 }
 
 
@@ -121,7 +148,8 @@ struct twinterface*interface_init()
     twinterface = (struct twinterface*) malloc(sizeof(struct twinterface));
     twinterface->closeup = 0;
     twinterface->overview = 0;    
-    twinterface->btn = 0;
+    twinterface->btn_play = 0;
+    twinterface->btn_deck = 0;
     twinterface->fader = 0;
     twinterface->redraw = 0;
     twinterface->volumeup_pressed = 0;
@@ -187,6 +215,9 @@ struct twinterface*interface_init()
 
     /* Start timer to post ticker events */ 
     twinterface->timer = SDL_AddTimer(REFRESH, ticker, NULL);
+    
+    /* Show deck 0 */
+    twinterface->deck = 0;
     
     /* Initialize widgets */
     interface_widgets_init(twinterface);
@@ -292,10 +323,12 @@ void interface_loop(struct twinterface *twinterface)
       
       /* Handle widgets events */        
       fader_pitch(twinterface->fader); // calculate pitch value from fader position
-      if(!fader_handle_events(twinterface->fader, e, twinterface->viewport.h) &&
-         !button_handle_events(twinterface->btn, e) /* &&
-         !overview_handle_events(overview, e)*/)
-          closeup_handle_events(twinterface->closeup, e);
+      if(twinterface->closeup)
+        if(!fader_handle_events(twinterface->fader, e, twinterface->viewport.h) &&
+             !button_handle_events(twinterface->btn_play, e, twinterface) &&
+             !button_handle_events(twinterface->btn_deck, e, twinterface) /* &&
+             !overview_handle_events(overview, e)*/)
+              closeup_handle_events(twinterface->closeup, e);
       
       /* draw each widgets to surface if timer said so */
       if(twinterface->redraw) {
@@ -313,9 +346,11 @@ void interface_loop(struct twinterface *twinterface)
           }
           
           /* Render widgets on surface */
-          closeup_show(twinterface->closeup);  
-          overview_show(twinterface->overview);
-          button_show(twinterface->btn);
+          if(twinterface->closeup)
+            closeup_show(twinterface->closeup);  
+          //overview_show(twinterface->overview);
+          button_show(twinterface->btn_play);
+          button_show(twinterface->btn_deck);
           fader_show(twinterface->fader);
                
           /* Got everything on rendering surface,
@@ -335,11 +370,19 @@ void interface_loop(struct twinterface *twinterface)
                     "interface_loop exit\n");
 #endif       
 }
+void interface_closeup_free(struct twinterface *twinterface)
+{
+    if(twinterface->closeup) {
+        closeup_free(twinterface->closeup);
+        twinterface->closeup = 0;
+    }
+}
 
 
 void interface_free(struct twinterface *twinterface)
 {
-    button_free(twinterface->btn);
+    button_free(twinterface->btn_play);
+    button_free(twinterface->btn_deck);
     fader_free(twinterface->fader);
     closeup_free(twinterface->closeup);
     //overview_free(twinterface->overview);

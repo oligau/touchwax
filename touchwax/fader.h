@@ -3,6 +3,7 @@
 
 #include "SDL.h"
 
+#include "interface.h"
 #include "track.h"
 #include "osc.h"
 
@@ -13,10 +14,11 @@ struct fader {
   SDL_Color *col;
   SDL_Renderer *renderer;
   SDL_Surface *surface;
-  SDL_Texture *texture;  
+  SDL_Texture *texture;
+  struct twinterface *twinterface;  
 };
 
-struct fader *fader_init(int x, int y, int w, int h, int heigth, SDL_Renderer *renderer);
+struct fader *fader_init(int x, int y, int w, int h, int heigth, SDL_Renderer *renderer, struct twinterface *twinterface);
 int fader_handle_events(struct fader *fader, SDL_Event event, int heigth);
 void fader_update_texture(struct fader *fader);
 void fader_show(struct fader *fader);

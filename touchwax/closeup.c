@@ -26,7 +26,7 @@ static SDL_Color elapsed_col = {0, 32, 255, 255},  // xwax original
                   next_col = {255, 32, 0, 255}, // night vision mode
                  needle_col = {153, 153, 153, 255};
 
-struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_Renderer *renderer)
+struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_Renderer *renderer, struct twinterface *twinterface)
 {
   // Clamp width to minimum 0 pixel
   if(w < 0)
@@ -40,7 +40,9 @@ struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_R
   closeup->rect.h = h;
   closeup->clicked = 0;
   closeup->renderer = renderer;
-  closeup->tr = tr;
+  closeup->tr = &tracks[twinterface->deck];
+  closeup->twinterface = twinterface;
+  
   
   closeup->thread_tile_updater_done = 0;
   closeup->rendered_tile = 0;
@@ -91,7 +93,7 @@ struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_R
   closeup->tiles[0]->rect.w = closeup->rect.w;
   closeup->tiles[0]->rect.h = closeup->padded_h;
   closeup->tiles[1]->rect.x = closeup->rect.x;
-  closeup->tiles[1]->rect.y = closeup->padded_h * -1;
+  closeup->tiles[1]->rect.y = closeup->padded_h * -1 - closeup->rect.h/2;
   closeup->tiles[1]->rect.w = closeup->rect.w;
   closeup->tiles[1]->rect.h = closeup->padded_h;
   closeup->tiles[2]->rect.x = closeup->rect.x;
@@ -99,11 +101,11 @@ struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_R
   closeup->tiles[2]->rect.w = closeup->rect.w;
   closeup->tiles[2]->rect.h = closeup->padded_h;
   closeup->tiles[3]->rect.x = closeup->rect.x;
-  closeup->tiles[3]->rect.y = closeup->padded_h * 1;
+  closeup->tiles[3]->rect.y = closeup->padded_h * 1 - closeup->rect.h/2;
   closeup->tiles[3]->rect.w = closeup->rect.w;
   closeup->tiles[3]->rect.h = closeup->padded_h;
   closeup->tiles[4]->rect.x = closeup->rect.x;
-  closeup->tiles[4]->rect.y = closeup->padded_h * 2;
+  closeup->tiles[4]->rect.y = closeup->padded_h * 2 - closeup->rect.h/2;
   closeup->tiles[4]->rect.w = closeup->rect.w;
   closeup->tiles[4]->rect.h = closeup->padded_h;
   closeup->playhead->rect.x = closeup->rect.x;
@@ -262,12 +264,12 @@ void closeup_draw_waveform(struct closeup *closeup, SDL_Surface *surface, int of
         //printf("drawn sample:%i on surface: %p\n", sp, surface);
 
     } 
-    printf("drawn %i samples at offset:%i on surface: %p\n", r, offset, surface);
+    //printf("drawn %i samples at offset:%i on surface: %p\n", r, offset, surface);
     
-    #ifdef __ANDROID__
-    __android_log_print(ANDROID_LOG_DEBUG, "closeup.c", 
-                    "drawn %i samples at offset:%i on surface: %p\n", r, offset, surface);
-#endif 
+//#ifdef __ANDROID__
+    //__android_log_print(ANDROID_LOG_DEBUG, "closeup.c", 
+                    //"drawn %i samples at offset:%i on surface: %p\n", r, offset, surface);
+//#endif 
     
 }
 
@@ -277,17 +279,29 @@ void closeup_update_init(struct closeup *closeup)
   int pos = (int)(closeup->tr->position * closeup->tr->rate) / 64;
   int floor_pos = floorf((float)pos / (float)closeup->padded_h);
   
-  closeup->tiles[0]->offset = (closeup->padded_h * -5); 
-  closeup->tiles[1]->offset = (closeup->padded_h * -4);
-  closeup->tiles[2]->offset = (closeup->padded_h * -3);
-  closeup->tiles[3]->offset = (closeup->padded_h * -2);
-  closeup->tiles[4]->offset = (closeup->padded_h * -1);
+  //closeup->tiles[0]->offset = (closeup->padded_h * -5); 
+  //closeup->tiles[1]->offset = (closeup->padded_h * -4);
+  //closeup->tiles[2]->offset = (closeup->padded_h * -3);
+  //closeup->tiles[3]->offset = (closeup->padded_h * -2);
+  //closeup->tiles[4]->offset = (closeup->padded_h * -1);
   
-  closeup->tiles[0]->tile_no = -5;
-  closeup->tiles[1]->tile_no = -4;
-  closeup->tiles[2]->tile_no = -3;
-  closeup->tiles[3]->tile_no = -2;
-  closeup->tiles[4]->tile_no = -1;
+  //closeup->tiles[0]->tile_no = -5;
+  //closeup->tiles[1]->tile_no = -4;
+  //closeup->tiles[2]->tile_no = -3;
+  //closeup->tiles[3]->tile_no = -2;
+  //closeup->tiles[4]->tile_no = -1;
+  
+  //closeup->tiles[0]->offset = (closeup->padded_h * -2); 
+  //closeup->tiles[1]->offset = (closeup->padded_h * -1);
+  //closeup->tiles[2]->offset = (closeup->padded_h * 0);
+  //closeup->tiles[3]->offset = (closeup->padded_h * 1);
+  //closeup->tiles[4]->offset = (closeup->padded_h * 2);
+  
+  //closeup->tiles[0]->tile_no = -2;
+  //closeup->tiles[1]->tile_no = -1;
+  //closeup->tiles[2]->tile_no = 0;
+  //closeup->tiles[3]->tile_no = 1;
+  //closeup->tiles[4]->tile_no = 2;
   
   //closeup_draw_waveform(closeup, closeup->tiles[0]->surface, closeup->tiles[0]->offset, next_col); 
   //closeup_draw_waveform(closeup, closeup->tiles[1]->surface, closeup->tiles[1]->offset, elapsed_col);  
@@ -326,9 +340,9 @@ void *closeup_tile_updater(void *param)
 void closeup_update(struct closeup *closeup)
 {
   if(closeup->nb_tile) {
-    
+        
     int pos = ((int)(closeup->tr->position * closeup->tr->rate) / 64);
-    int current_tile = (pos / 4096);
+    int current_tile = (pos / closeup->padded_h);
         
     if(closeup->forward) {
       
@@ -405,114 +419,115 @@ void closeup_update(struct closeup *closeup)
 
 void closeup_show(struct closeup *closeup)
 {
-  
-  if(closeup->tr->length != closeup->last_length) {
-    
-    /* Keep track of track changes */
-    closeup->last_length = closeup->tr->length;
-    
-    
-        
-    closeup->nb_tile = (int) ceilf((closeup->tr->length / 64) / (float) closeup->padded_h);
-        
-    printf("updated nb_tile:%i\n", closeup->nb_tile);
-#ifdef __ANDROID__
-    __android_log_print(ANDROID_LOG_DEBUG, "closeup.c", 
-                    "updated nb_tile:%i\n", closeup->nb_tile);
-#endif       
-  }
-  
-  int pos = (int)(closeup->tr->position * closeup->tr->rate) / 64;
-  
-  /* Determine direction */
-  closeup->forward = (pos - closeup->last_pos) >= 0;
-  closeup->last_pos = pos;
-         
-  /* Destination for texture is calculated after position */
-  closeup->tiles[0]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * -2) + closeup->rect.h/2;
-  closeup->tiles[1]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * -1) + closeup->rect.h/2;
-  closeup->tiles[2]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 0)  + closeup->rect.h/2;
-  closeup->tiles[3]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 1) + closeup->rect.h/2;
-  closeup->tiles[4]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 2) + closeup->rect.h/2;
-
-  if(closeup->nb_tile) {
-    
-    /* Ugly hack alert *siren sound*
-     * SDL_UpdateTexture should be called only once by redraw of surface
-     * inside tile_updater thread. Apparently SDL doesn't support 
-     * uploading textures from outside main thread. 
-     * Here we use a simple flag to communicate with reandering thread, 
-     * meaning you should upload to texture as surface has been modified.
-    */
-    
-    if(closeup->modified[0]) {
-      SDL_UpdateTexture(closeup->tiles[0]->texture, NULL, closeup->tiles[0]->surface->pixels, closeup->tiles[0]->surface->pitch);    
-      closeup->modified[0] = 0;
-    } else if(closeup->modified[1]) {
-      SDL_UpdateTexture(closeup->tiles[1]->texture, NULL, closeup->tiles[1]->surface->pixels, closeup->tiles[1]->surface->pitch);    
-      closeup->modified[1] = 0;      
-    } else if(closeup->modified[2]) {
-      SDL_UpdateTexture(closeup->tiles[2]->texture, NULL, closeup->tiles[2]->surface->pixels, closeup->tiles[2]->surface->pitch);    
-      closeup->modified[2] = 0;      
-    } else if(closeup->modified[3]) {
-      SDL_UpdateTexture(closeup->tiles[3]->texture, NULL, closeup->tiles[3]->surface->pixels, closeup->tiles[3]->surface->pitch);    
-      closeup->modified[3] = 0;      
-    } else if(closeup->modified[4]) {
-      SDL_UpdateTexture(closeup->tiles[4]->texture, NULL, closeup->tiles[4]->surface->pixels, closeup->tiles[4]->surface->pitch);    
-      closeup->modified[4] = 0;      
+  if(closeup->tr) {
+    if(closeup->tr->length != closeup->last_length) {
+      
+      /* Keep track of track changes */
+      closeup->last_length = closeup->tr->length;
+      
+      
+          
+      closeup->nb_tile = (int) ceilf((closeup->tr->length / 64) / (float) closeup->padded_h);
+          
+      printf("updated nb_tile:%i\n", closeup->nb_tile);
+  #ifdef __ANDROID__
+      __android_log_print(ANDROID_LOG_DEBUG, "closeup.c", 
+                      "updated nb_tile:%i\n", closeup->nb_tile);
+  #endif       
     }
     
-    /* end of ugly hack */
+    int pos = (int)(closeup->tr->position * closeup->tr->rate) / 64;
     
-    int current_tile = (pos / 4096);
-    //printf("current_tile: %i\n", current_tile);
-        
-    closeup->tile_index[0] = ((current_tile % 5) + 0) % 5;
-    closeup->tile_index[1] = ((current_tile % 5) + 1) % 5;
-    closeup->tile_index[2] = ((current_tile % 5) + 2) % 5;
-    closeup->tile_index[3] = ((current_tile % 5) + 3) % 5;
-    closeup->tile_index[4] = ((current_tile % 5) + 4) % 5;
-    
-    if(closeup->tile_index[0] >= 0)
-      SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[0]]->texture, NULL, &closeup->tiles[0]->rect);
-    if(closeup->tile_index[1] >= 0)
-      SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[1]]->texture, NULL, &closeup->tiles[1]->rect);
-    if(closeup->tile_index[2] >= 0)    
-      SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[2]]->texture, NULL, &closeup->tiles[2]->rect);
-    if(closeup->tile_index[3] >= 0)    
-      SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[3]]->texture, NULL, &closeup->tiles[3]->rect);
-    if(closeup->tile_index[4] >= 0)    
-      SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[4]]->texture, NULL, &closeup->tiles[4]->rect);
+    /* Determine direction */
+    closeup->forward = (pos - closeup->last_pos) >= 0;
+    closeup->last_pos = pos;
+           
+    /* Destination for texture is calculated after position */
+    closeup->tiles[0]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * -2) + closeup->rect.h/2;
+    closeup->tiles[1]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * -1) + closeup->rect.h/2;
+    closeup->tiles[2]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 0)  + closeup->rect.h/2;
+    closeup->tiles[3]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 1) + closeup->rect.h/2;
+    closeup->tiles[4]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 2) + closeup->rect.h/2;
+
+    if(closeup->nb_tile) {
       
+      /* Ugly hack alert *siren sound*
+       * SDL_UpdateTexture should be called only once by redraw of surface
+       * inside tile_updater thread. Apparently SDL doesn't support 
+       * uploading textures from outside main thread. 
+       * Here we use a simple flag to communicate with reandering thread, 
+       * meaning you should upload to texture as surface has been modified.
+      */
+      
+      if(closeup->modified[0]) {
+        SDL_UpdateTexture(closeup->tiles[0]->texture, NULL, closeup->tiles[0]->surface->pixels, closeup->tiles[0]->surface->pitch);    
+        closeup->modified[0] = 0;
+      } else if(closeup->modified[1]) {
+        SDL_UpdateTexture(closeup->tiles[1]->texture, NULL, closeup->tiles[1]->surface->pixels, closeup->tiles[1]->surface->pitch);    
+        closeup->modified[1] = 0;      
+      } else if(closeup->modified[2]) {
+        SDL_UpdateTexture(closeup->tiles[2]->texture, NULL, closeup->tiles[2]->surface->pixels, closeup->tiles[2]->surface->pitch);    
+        closeup->modified[2] = 0;      
+      } else if(closeup->modified[3]) {
+        SDL_UpdateTexture(closeup->tiles[3]->texture, NULL, closeup->tiles[3]->surface->pixels, closeup->tiles[3]->surface->pitch);    
+        closeup->modified[3] = 0;      
+      } else if(closeup->modified[4]) {
+        SDL_UpdateTexture(closeup->tiles[4]->texture, NULL, closeup->tiles[4]->surface->pixels, closeup->tiles[4]->surface->pitch);    
+        closeup->modified[4] = 0;      
+      }
+      
+      /* end of ugly hack */
+      
+      int current_tile = (pos / 4096);
+      //printf("current_tile: %i\n", current_tile);
+          
+      closeup->tile_index[0] = ((current_tile % 5) + 0) % 5;
+      closeup->tile_index[1] = ((current_tile % 5) + 1) % 5;
+      closeup->tile_index[2] = ((current_tile % 5) + 2) % 5;
+      closeup->tile_index[3] = ((current_tile % 5) + 3) % 5;
+      closeup->tile_index[4] = ((current_tile % 5) + 4) % 5;
+      
+      if(closeup->tile_index[0] >= 0)
+        SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[0]]->texture, NULL, &closeup->tiles[0]->rect);
+      if(closeup->tile_index[1] >= 0)
+        SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[1]]->texture, NULL, &closeup->tiles[1]->rect);
+      if(closeup->tile_index[2] >= 0)    
+        SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[2]]->texture, NULL, &closeup->tiles[2]->rect);
+      if(closeup->tile_index[3] >= 0)    
+        SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[3]]->texture, NULL, &closeup->tiles[3]->rect);
+      if(closeup->tile_index[4] >= 0)    
+        SDL_RenderCopy(closeup->renderer, closeup->tiles[closeup->tile_index[4]]->texture, NULL, &closeup->tiles[4]->rect);
+              
+      //printf(" tile0: %i\n tile1: %i\n tile2: %i\n tile3: %i\n tile4: %i\n",
+      //tile_index[0],
+      //tile_index[1],
+      //tile_index[2],
+      //tile_index[3],
+      //tile_index[4]);
+      
+      //printf("RenderCopy. pos: %i boundary_front:%i boundary_rear:%i surface: %p\n", pos, boundary_front, boundary_rear, closeup->tile_current->surface);    
+
+      //printf("direction:%i\n", closeup->forward);
+      //fflush(stdout);
+
+      /* If we get outside current tile, prefetch next in background*/
+      //int is_inside_current = pos < closeup->tile_current->offset + current_heigth && pos > closeup->tile_current->offset;
+      //int is_inside_prefetch = pos < closeup->tile_next->offset + current_heigth && pos > closeup->tile_prev->offset;
+      //if(!is_inside_current){
+        //printf("pos: %i surface: %p\n", pos, closeup->tile_current->surface);           
+        //if(!is_inside_prefetch)
+          //closeup_update_init(closeup);
+        //else
+          //closeup_update(closeup);
+      //}
+    
+      //printf("pos:%i current_heigth:%i current_y:%i next_heigth:%i next_y:%i\n", pos, current_heigth, current_y, next_heigth, next_y);
+
+    }    
+    
     SDL_RenderCopy(closeup->renderer, closeup->playhead->texture, NULL, &closeup->playhead->rect);      
     
-    //printf(" tile0: %i\n tile1: %i\n tile2: %i\n tile3: %i\n tile4: %i\n",
-    //tile_index[0],
-    //tile_index[1],
-    //tile_index[2],
-    //tile_index[3],
-    //tile_index[4]);
-    
-    //printf("RenderCopy. pos: %i boundary_front:%i boundary_rear:%i surface: %p\n", pos, boundary_front, boundary_rear, closeup->tile_current->surface);    
-
-    //printf("direction:%i\n", closeup->forward);
-    //fflush(stdout);
-
-    /* If we get outside current tile, prefetch next in background*/
-    //int is_inside_current = pos < closeup->tile_current->offset + current_heigth && pos > closeup->tile_current->offset;
-    //int is_inside_prefetch = pos < closeup->tile_next->offset + current_heigth && pos > closeup->tile_prev->offset;
-    //if(!is_inside_current){
-      //printf("pos: %i surface: %p\n", pos, closeup->tile_current->surface);           
-      //if(!is_inside_prefetch)
-        //closeup_update_init(closeup);
-      //else
-        //closeup_update(closeup);
-    //}
-  
-    //printf("pos:%i current_heigth:%i current_y:%i next_heigth:%i next_y:%i\n", pos, current_heigth, current_y, next_heigth, next_y);
-
-  }    
-
+  }
 }
 
 void closeup_handle_events(struct closeup *closeup, SDL_Event event)
@@ -536,7 +551,7 @@ void closeup_handle_events(struct closeup *closeup, SDL_Event event)
             
             if(closeup->clicked) {
                 //tracks[0].position = tracks[0].position + x;
-                osc_send_position(closeup->tr->position - y/100);
+                osc_send_position(closeup->twinterface->deck, closeup->tr->position - y/100);
                 //printf("x:%f y:%f\n", x, y);
             }
             

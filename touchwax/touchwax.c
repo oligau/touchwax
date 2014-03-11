@@ -27,6 +27,8 @@ main(int argc, char *argv[])
         struct twinterface *twinterface;
         
         track_init(0);
+        track_init(1);
+        
         twinterface = interface_init();
         if(!twinterface) {
                 printf("Interface creation exited with error\n");
@@ -37,6 +39,7 @@ main(int argc, char *argv[])
         interface_loop(twinterface);
         
         interface_free(twinterface);
+        
         osc_free();
         
         printf("Exiting cleanly...\n");

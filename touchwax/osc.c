@@ -13,6 +13,10 @@
 
 #include "lo/lo.h"
 
+#ifndef max
+	#define max( a, b ) ( ((a) > (b)) ? (a) : (b) )
+#endif
+
 struct osc *osc;
 lo_server_thread st = 0;
 
@@ -45,18 +49,19 @@ int osc_init(struct twinterface *twinterface)
 {
     osc = (struct osc *) malloc(sizeof(struct osc));
     osc->twinterface = twinterface;
+    osc->ndeck = 0;
     
     /* start a new server on port 7770 */
     st = lo_server_thread_new("7771", error);
 
     /* add method that will match any path and args */
-    lo_server_thread_add_method(st, "/touchwax/ppm", "bi", ppm_handler, NULL);
+    lo_server_thread_add_method(st, "/touchwax/ppm", "ibi", ppm_handler, NULL);
 
     /* add method that will match any path and args */
-    lo_server_thread_add_method(st, "/touchwax/track_load", "ssii", track_load_handler, NULL);
+    lo_server_thread_add_method(st, "/touchwax/track_load", "iissi", track_load_handler, NULL);
 
     /* add method that will match any path and args */
-    lo_server_thread_add_method(st, "/touchwax/position", "f", pos_handler, NULL);
+    lo_server_thread_add_method(st, "/touchwax/position", "if", pos_handler, NULL);
 
     /* add method that will match any path and args */
     lo_server_thread_add_method(st, "/touchwax/scale", "i", scale_handler, NULL);    
@@ -121,9 +126,9 @@ int generic_handler(const char *path, const char *types, lo_arg ** argv,
 int track_load_handler(const char *path, const char *types, lo_arg ** argv,
                     int argc, void *data, void *user_data)
 {
-    int i;
+    int i, d;
 
-    //printf("path: <%s>\n", path);
+    printf("track_load_handler: path: <%s>\n", path);
 #ifdef __ANDROID__
     __android_log_print(ANDROID_LOG_DEBUG, "osc.c", "path: <%s>\n", path);
 #endif
@@ -136,14 +141,23 @@ int track_load_handler(const char *path, const char *types, lo_arg ** argv,
         //printf("\n");
     }
     
-    track_init(0);
+    /* Shut closeup updater thread before swapping track */
+    interface_closeup_free(osc->twinterface);
     
-    tracks[0].artist = (char *) argv[0];
-    tracks[0].title = (char *) argv[1];
-    tracks[0].rate = argv[2]->i;
-    tracks[0].length = argv[3]->i;
+    d = argv[0]->i;
     
-    interface_update_overview(osc->twinterface);    
+    osc->ndeck = max(osc->ndeck, d+1);
+    
+    fprintf(stderr, "updated ndeck: %i\n", osc->ndeck);
+    
+    track_init(d);
+    
+    tracks[d].id = argv[1]->i;
+    tracks[d].artist = (char *) argv[2];
+    tracks[d].title = (char *) argv[3];
+    tracks[d].rate = argv[4]->i;
+    
+    //interface_update_overview(osc->twinterface);    
     interface_update_closeup(osc->twinterface);
 
 #ifdef __ANDROID__
@@ -161,19 +175,20 @@ int ppm_handler(const char *path, const char *types, lo_arg ** argv,
                     int argc, void *data, void *user_data)
 {
 
-    //printf("path: <%s>\n", path);
+    printf("ppm_handler: path: <%s>\n", path);
 #ifdef __ANDROID__
     __android_log_print(ANDROID_LOG_DEBUG, "osc.c", "path: <%s>\n", path);
 #endif
             
-    lo_blob blob = argv[0];
+    int track_id = argv[0]->i;
+    lo_blob blob = argv[1];
     int size = lo_blob_datasize(blob);
     unsigned char *bdata = (unsigned char *) lo_blob_dataptr(blob);
     
-    tracks[0].length = (unsigned int) argv[1]->i;
-    printf("track.length: %i\n", tracks[0].length);
+    tracks[track_get_deck(track_id)].length = (unsigned int) argv[2]->i;
+    //printf("track.length: %i\n", tracks[0].length);
     
-    track_add_ppm_block(bdata, size);
+    track_add_ppm_block(track_id, bdata, size);
     
 #ifdef __ANDROID__
      __android_log_print(ANDROID_LOG_DEBUG, "osc.c", "arg %d '%c' [%d byte blob]\nlength:%d", 0, types[0], size, tracks[0].length);
@@ -192,7 +207,7 @@ int pos_handler(const char *path, const char *types, lo_arg ** argv,
     //printf("path: <%s>\n", path);
     //__android_log_print(ANDROID_LOG_DEBUG, "osc.c", "path: <%s>\n", path);
     
-    tracks[0].position = argv[0]->f;
+    tracks[argv[0]->i].position = argv[1]->f;
     
      //__android_log_print(ANDROID_LOG_DEBUG, "osc.c", "arg %d '%c : %f", 0, types[0], argv[0]->f);
 
@@ -219,30 +234,31 @@ int scale_handler(const char *path, const char *types, lo_arg ** argv,
     return 1;
 }
 
-int osc_send_pitch(const float pitch)
+int osc_send_pitch(int d, const float pitch)
 {
     lo_address t = lo_address_new(ADDRESS, "7770");
     
-    if (lo_send(t, "/xwax/pitch", "f", pitch) == -1) {
+    if (lo_send(t, "/xwax/pitch", "if", d, pitch) == -1) {
 #ifdef __ANDROID__
         __android_log_print(ANDROID_LOG_DEBUG, "osc.c", "OSC error %d: %s\n", lo_address_errno(t),
-        lo_address_errstr(t));
+            lo_address_errstr(t));
 #endif
     }
+
     
     return 1;
 }
 
-int osc_send_position(const float position)
+int osc_send_position(int d, const float position)
 {
     lo_address t = lo_address_new(ADDRESS, "7770");
-    
-    if (lo_send(t, "/xwax/position", "f", position) == -1) {
+        
+    if (lo_send(t, "/xwax/position", "if", d, position) == -1) {
 #ifdef __ANDROID__
-        __android_log_print(ANDROID_LOG_DEBUG, "osc.c", "OSC error %d: %s\n", lo_address_errno(t),
+    __android_log_print(ANDROID_LOG_DEBUG, "osc.c", "OSC error %d: %s\n", lo_address_errno(t),
         lo_address_errstr(t));
 #endif
-    }
+    }  
     
     return 1;
 }

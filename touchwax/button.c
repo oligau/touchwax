@@ -11,7 +11,7 @@ const int CLIP_MOUSEOUT = 1;
 const int CLIP_MOUSEDOWN = 2;
 const int CLIP_MOUSEUP = 3;
 
-struct button *button_init(int x, int y, int w, int h, const char *filename, SDL_Renderer *renderer)
+struct button *button_init(int x, int y, int w, int h, const char *filename, SDL_Renderer *renderer, void *callback)
 {
   struct button *btn;
   btn = (struct button *) malloc(sizeof(struct button));
@@ -25,6 +25,7 @@ struct button *button_init(int x, int y, int w, int h, const char *filename, SDL
   btn->clip = &(btn->clips[ CLIP_MOUSEOUT ]);
   btn->col = &stop_col;
   btn->renderer = renderer;
+  btn->callback = callback;
   
   /* create surface that holds the button */
   /* SDL interprets each pixel as a 32-bit number, so our masks must depend
@@ -53,7 +54,7 @@ struct button *button_init(int x, int y, int w, int h, const char *filename, SDL
   return btn;
 }
 
-int button_handle_events(struct button *btn, SDL_Event event)
+int button_handle_events(struct button *btn, SDL_Event event, struct twinterface *twinterface)
 {
      
      //The mouse offsets
@@ -76,7 +77,8 @@ int button_handle_events(struct button *btn, SDL_Event event)
                 btn->clip = &btn->clips[ CLIP_MOUSEDOWN ];
                 
                 // Toggle play
-                track_toggle_play(0);
+                // track_toggle_play(0);
+                btn->callback(twinterface);
                 
                 // Swap color
                 if(btn->col == &play_col)

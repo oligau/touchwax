@@ -14,10 +14,11 @@ struct button {
   SDL_Renderer *renderer;
   SDL_Surface *surface;
   SDL_Texture *texture;
+  void* (*callback)(struct twinterface *twinterface);
 };
 
-struct button *button_init(int x, int y, int w, int h, const char *filename, SDL_Renderer *renderer);
-int button_handle_events(struct button *btn, SDL_Event event);
+struct button *button_init(int x, int y, int w, int h, const char *filename, SDL_Renderer *renderer, void *callback);
+int button_handle_events(struct button *btn, SDL_Event event, struct twinterface *twinterface);
 void button_update_texture(struct button *btn);
 void button_show(struct button *btn);
 void button_free(struct button *btn);
