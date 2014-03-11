@@ -342,7 +342,7 @@ void closeup_update(struct closeup *closeup)
   if(closeup->nb_tile) {
         
     int pos = ((int)(closeup->tr->position * closeup->tr->rate) / 64);
-    int current_tile = (pos / closeup->padded_h);
+    int current_tile = floor((pos / closeup->padded_h));
         
     if(closeup->forward) {
       
@@ -351,7 +351,7 @@ void closeup_update(struct closeup *closeup)
           (closeup->tile_index[0] >=0 && closeup->tile_index[0] < 5)) {
         
         closeup->tiles[closeup->tile_index[0]]->offset = pos - (closeup->padded_h * 2);
-        closeup->tiles[closeup->tile_index[0]]->tile_no = current_tile - 21;
+        closeup->tiles[closeup->tile_index[0]]->tile_no = current_tile - 2;
         closeup_draw_waveform(closeup, closeup->tiles[closeup->tile_index[0]]->surface, closeup->tiles[closeup->tile_index[0]]->offset, elapsed_col);
         ++closeup->modified[closeup->tile_index[0]]; // Inform render thread that we have a new tile to copy to gpu
         
@@ -392,7 +392,7 @@ void closeup_update(struct closeup *closeup)
       
       // Verify if tile 4 is outside threshold
       if(closeup->tiles[closeup->tile_index[4]]->tile_no != current_tile + 2 &&
-          (closeup->tile_index[4] >=0 && closeup->tile_index[0] < 5)) {
+          (closeup->tile_index[4] >=0 && closeup->tile_index[4] < 5)) {
         
         closeup->tiles[closeup->tile_index[4]]->offset = pos + (closeup->padded_h * 2);
         closeup->tiles[closeup->tile_index[4]]->tile_no = current_tile + 2;
@@ -435,21 +435,20 @@ void closeup_show(struct closeup *closeup)
                       "updated nb_tile:%i\n", closeup->nb_tile);
   #endif       
     }
-    
-    int pos = (int)(closeup->tr->position * closeup->tr->rate) / 64;
-    
-    /* Determine direction */
-    closeup->forward = (pos - closeup->last_pos) >= 0;
-    closeup->last_pos = pos;
-           
-    /* Destination for texture is calculated after position */
-    closeup->tiles[0]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * -2) + closeup->rect.h/2;
-    closeup->tiles[1]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * -1) + closeup->rect.h/2;
-    closeup->tiles[2]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 0)  + closeup->rect.h/2;
-    closeup->tiles[3]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 1) + closeup->rect.h/2;
-    closeup->tiles[4]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 2) + closeup->rect.h/2;
 
     if(closeup->nb_tile) {
+      int pos = (int)(closeup->tr->position * closeup->tr->rate) / 64;
+      
+      /* Determine direction */
+      closeup->forward = (pos - closeup->last_pos) >= 0;
+      closeup->last_pos = pos;
+             
+      /* Destination for texture is calculated after position */
+      closeup->tiles[0]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * -2) + closeup->rect.h/2;
+      closeup->tiles[1]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * -1) + closeup->rect.h/2;
+      closeup->tiles[2]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 0)  + closeup->rect.h/2;
+      closeup->tiles[3]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 1) + closeup->rect.h/2;
+      closeup->tiles[4]->rect.y = (-pos % closeup->padded_h) + (closeup->padded_h * 2) + closeup->rect.h/2;
       
       /* Ugly hack alert *siren sound*
        * SDL_UpdateTexture should be called only once by redraw of surface
@@ -478,7 +477,7 @@ void closeup_show(struct closeup *closeup)
       
       /* end of ugly hack */
       
-      int current_tile = (pos / 4096);
+      int current_tile = floor((pos / closeup->padded_h));
       //printf("current_tile: %i\n", current_tile);
           
       closeup->tile_index[0] = ((current_tile % 5) + 0) % 5;
