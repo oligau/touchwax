@@ -49,6 +49,7 @@ void interface_button_deck_callback(struct twinterface *twinterface)
     
     interface_update_closeup(twinterface);
     interface_update_overview(twinterface);
+    
 }
 
 void interface_update_overview(struct twinterface *twinterface)

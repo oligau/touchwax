@@ -21,9 +21,10 @@
 
 #define CLOSEUP_WAVEFORM_WIDTH 512
 
-static SDL_Color elapsed_col = {0, 32, 255, 255},  // xwax original
-                  prev_col = {0, 255, 32, 255}, 
-                  next_col = {255, 32, 0, 255}, // night vision mode
+static SDL_Color background_col = {31, 4, 0, 255},
+                 elapsed_col = {0, 32, 255, 255},  // xwax original
+                 prev_col = {0, 255, 32, 255}, 
+                 next_col = {255, 32, 0, 255}, // night vision mode
                  needle_col = {153, 153, 153, 255};
 
 struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_Renderer *renderer, struct twinterface *twinterface)
@@ -133,7 +134,14 @@ struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_R
   closeup->tiles[4]->surface = SDL_CreateRGBSurface(0, CLOSEUP_WAVEFORM_WIDTH, closeup->padded_h, 32,
                                    rmask, gmask, bmask, amask);
   closeup->playhead->surface = SDL_CreateRGBSurface(0, CLOSEUP_WAVEFORM_WIDTH, 1, 32,
-                                   rmask, gmask, bmask, amask);                                                                       
+                                   rmask, gmask, bmask, amask);
+                                                                                            
+  /* Fill surfaces with background color to make sure no garbage shows on screen */
+  SDL_FillRect(closeup->tiles[0]->surface, NULL, closeup_palette(closeup->tiles[0]->surface, &background_col));
+  SDL_FillRect(closeup->tiles[1]->surface, NULL, closeup_palette(closeup->tiles[1]->surface, &background_col));
+  SDL_FillRect(closeup->tiles[2]->surface, NULL, closeup_palette(closeup->tiles[2]->surface, &background_col));
+  SDL_FillRect(closeup->tiles[3]->surface, NULL, closeup_palette(closeup->tiles[3]->surface, &background_col));
+  SDL_FillRect(closeup->tiles[4]->surface, NULL, closeup_palette(closeup->tiles[4]->surface, &background_col));
 
   /* create textures that links the surface to gpu */
   closeup->tiles[0]->texture = SDL_CreateTexture(closeup->renderer, SDL_PIXELFORMAT_ARGB8888, 
@@ -147,7 +155,13 @@ struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_R
   closeup->tiles[4]->texture = SDL_CreateTexture(closeup->renderer, SDL_PIXELFORMAT_ARGB8888, 
                     SDL_TEXTUREACCESS_STREAMING, CLOSEUP_WAVEFORM_WIDTH, closeup->padded_h);
   closeup->playhead->texture = SDL_CreateTexture(closeup->renderer, SDL_PIXELFORMAT_ARGB8888, 
-                    SDL_TEXTUREACCESS_STREAMING, CLOSEUP_WAVEFORM_WIDTH, 1);                    
+                    SDL_TEXTUREACCESS_STREAMING, CLOSEUP_WAVEFORM_WIDTH, 1);                   
+                    
+  SDL_UpdateTexture(closeup->tiles[0]->texture, NULL, closeup->tiles[0]->surface->pixels, closeup->tiles[0]->surface->pitch);    
+  SDL_UpdateTexture(closeup->tiles[1]->texture, NULL, closeup->tiles[1]->surface->pixels, closeup->tiles[1]->surface->pitch);    
+  SDL_UpdateTexture(closeup->tiles[2]->texture, NULL, closeup->tiles[2]->surface->pixels, closeup->tiles[2]->surface->pitch);    
+  SDL_UpdateTexture(closeup->tiles[3]->texture, NULL, closeup->tiles[3]->surface->pixels, closeup->tiles[3]->surface->pitch);    
+  SDL_UpdateTexture(closeup->tiles[4]->texture, NULL, closeup->tiles[4]->surface->pixels, closeup->tiles[4]->surface->pitch);    
 
   SDL_FillRect(closeup->playhead->surface, NULL, closeup_palette(closeup->playhead->surface, &needle_col));
   SDL_UpdateTexture(closeup->playhead->texture, NULL, closeup->playhead->surface->pixels, closeup->playhead->surface->pitch);    
@@ -419,7 +433,7 @@ void closeup_update(struct closeup *closeup)
 
 void closeup_show(struct closeup *closeup)
 {
-  if(closeup->tr) {
+  if(closeup) {
     if(closeup->tr->length != closeup->last_length) {
       
       /* Keep track of track changes */
@@ -594,6 +608,7 @@ void closeup_free(struct closeup *closeup)
   free(closeup->playhead);
  
   free(closeup);
+  closeup = 0;
 }
 
 Uint32 closeup_palette(SDL_Surface *sf, SDL_Color *col)

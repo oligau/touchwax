@@ -191,7 +191,7 @@ int ppm_handler(const char *path, const char *types, lo_arg ** argv,
     track_add_ppm_block(track_id, bdata, size);
     
 #ifdef __ANDROID__
-     __android_log_print(ANDROID_LOG_DEBUG, "osc.c", "arg %d '%c' [%d byte blob]\nlength:%d", 0, types[0], size, tracks[0].length);
+     __android_log_print(ANDROID_LOG_DEBUG, "osc.c", "arg %d '%c' [%d byte blob]\nlength:%d", 0, types[0], size, tracks[track_get_deck(track_id)].length);
 #endif
 
     //printf("\n");
