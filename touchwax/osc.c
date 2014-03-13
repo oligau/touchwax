@@ -61,7 +61,7 @@ int osc_init(struct twinterface *twinterface)
     lo_server_thread_add_method(st, "/touchwax/track_load", "iissi", track_load_handler, NULL);
 
     /* add method that will match any path and args */
-    lo_server_thread_add_method(st, "/touchwax/position", "if", pos_handler, NULL);
+    lo_server_thread_add_method(st, "/touchwax/position", "iff", pos_handler, NULL);
 
     /* add method that will match any path and args */
     lo_server_thread_add_method(st, "/touchwax/scale", "i", scale_handler, NULL);    
@@ -208,6 +208,7 @@ int pos_handler(const char *path, const char *types, lo_arg ** argv,
     //__android_log_print(ANDROID_LOG_DEBUG, "osc.c", "path: <%s>\n", path);
     
     tracks[argv[0]->i].position = argv[1]->f;
+    tracks[argv[0]->i].pitch = argv[2]->f;
     
      //__android_log_print(ANDROID_LOG_DEBUG, "osc.c", "arg %d '%c : %f", 0, types[0], argv[0]->f);
 

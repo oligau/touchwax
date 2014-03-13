@@ -51,14 +51,14 @@ unsigned char track_get_ppm(struct track *tr, unsigned int sp)
   return tr->ppm[sp / TRACK_PPM_RES];
 }
 
-void track_toggle_play(int d)
+void track_toggle_play(int d, float pitch)
 {
   if(tracks[d].play) {
     osc_send_pitch(d, 0); //stop
     tracks[d].play = 0;
   }
   else {
-    osc_send_pitch(d, tracks[d].pitch); //play
+    osc_send_pitch(d, pitch); //play
     tracks[d].play = 1;    
   }
   

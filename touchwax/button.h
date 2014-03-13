@@ -15,9 +15,11 @@ struct button {
   SDL_Surface *surface;
   SDL_Texture *texture;
   void* (*callback)(struct twinterface *twinterface);
+  int (*color_callback)(struct twinterface *twinterface);
+
 };
 
-struct button *button_init(int x, int y, int w, int h, const char *filename, SDL_Renderer *renderer, void *callback);
+struct button *button_init(int x, int y, int w, int h, const char *filename, SDL_Renderer *renderer, void *callback, void *color_callback);
 int button_handle_events(struct button *btn, SDL_Event event, struct twinterface *twinterface);
 void button_update_texture(struct button *btn);
 void button_show(struct button *btn);

@@ -37,7 +37,23 @@ void interface_button_reverse_callback(struct twinterface *twinterface)
 
 void interface_button_play_callback(struct twinterface *twinterface)
 {
-    track_toggle_play(twinterface->deck);
+    track_toggle_play(twinterface->deck, twinterface->fader->pitch);
+}
+
+int interface_button_play_color_callback(struct twinterface *twinterface)
+{
+    if(tracks[twinterface->deck].pitch == 0.0f)
+        return 0;
+    else
+        return 1;
+}
+
+int interface_button_reverse_color_callback(struct twinterface *twinterface)
+{
+    if(tracks[twinterface->deck].pitch < 0.0f)
+        return 0;
+    else
+        return 1;
 }
 
 void interface_button_deck_callback(struct twinterface *twinterface)
@@ -107,7 +123,8 @@ void interface_widgets_init(struct twinterface *twinterface)
                       100, 
                       "button.bmp",
                       twinterface->renderer,
-                      &interface_button_play_callback);
+                      &interface_button_play_callback,
+                      &interface_button_play_color_callback);
 
     if(twinterface->btn_reset)
         button_free(twinterface->btn_reset);
@@ -117,7 +134,8 @@ void interface_widgets_init(struct twinterface *twinterface)
                       100, 
                       "button.bmp",
                       twinterface->renderer,
-                      &interface_button_reset_callback);  
+                      &interface_button_reset_callback,
+                      &interface_button_play_color_callback);  
 
       
     if(twinterface->btn_reverse)
@@ -128,7 +146,8 @@ void interface_widgets_init(struct twinterface *twinterface)
                       100, 
                       "button.bmp",
                       twinterface->renderer,
-                      &interface_button_reverse_callback);                
+                      &interface_button_reverse_callback,
+                      &interface_button_reverse_color_callback);                
                       
     if(twinterface->btn_deck)
         button_free(twinterface->btn_deck);
@@ -138,7 +157,8 @@ void interface_widgets_init(struct twinterface *twinterface)
                       100, 
                       "button.bmp",
                       twinterface->renderer,
-                      &interface_button_deck_callback);
+                      &interface_button_deck_callback,
+                      &interface_button_play_color_callback);
                       
     if(twinterface->fader)
         fader_free(twinterface->fader);                      
