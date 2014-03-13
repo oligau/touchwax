@@ -22,7 +22,7 @@ struct button *button_init(int x, int y, int w, int h, const char *filename, SDL
   //button_set_clips(btn);
   //btn->buttonSheet = button_load_image(filename);
   btn->buttonSheet = 0;
-  btn->clip = &(btn->clips[ CLIP_MOUSEOUT ]);
+  //btn->clip = &(btn->clips[ CLIP_MOUSEOUT ]);
   btn->col = &stop_col;
   btn->renderer = renderer;
   btn->callback = callback;
@@ -74,10 +74,8 @@ int button_handle_events(struct button *btn, SDL_Event event, struct twinterface
             if( ( x > btn->rect.x ) && ( x < btn->rect.x + btn->rect.w ) && ( y > btn->rect.y ) && ( y < btn->rect.y + btn->rect.h ) )
             {
                 //Set the button sprite
-                btn->clip = &btn->clips[ CLIP_MOUSEDOWN ];
+                //btn->clip = &btn->clips[ CLIP_MOUSEDOWN ];
                 
-                // Toggle play
-                // track_toggle_play(0);
                 btn->callback(twinterface);
                 
                 // Swap color
@@ -154,26 +152,26 @@ void button_apply_surface(int x, int y, SDL_Surface* source, SDL_Surface* destin
 
 void button_set_clips(struct button *btn)
 {
-    //Clip the sprite sheet
-    btn->clips[ CLIP_MOUSEOVER ].x = 0;
-    btn->clips[ CLIP_MOUSEOVER ].y = 0;
-    btn->clips[ CLIP_MOUSEOVER ].w = 320;
-    btn->clips[ CLIP_MOUSEOVER ].h = 240;
+    ////Clip the sprite sheet
+    //btn->clips[ CLIP_MOUSEOVER ].x = 0;
+    //btn->clips[ CLIP_MOUSEOVER ].y = 0;
+    //btn->clips[ CLIP_MOUSEOVER ].w = 320;
+    //btn->clips[ CLIP_MOUSEOVER ].h = 240;
 
-    btn->clips[ CLIP_MOUSEOUT ].x = 320;
-    btn->clips[ CLIP_MOUSEOUT ].y = 0;
-    btn->clips[ CLIP_MOUSEOUT ].w = 320;
-    btn->clips[ CLIP_MOUSEOUT ].h = 240;
+    //btn->clips[ CLIP_MOUSEOUT ].x = 320;
+    //btn->clips[ CLIP_MOUSEOUT ].y = 0;
+    //btn->clips[ CLIP_MOUSEOUT ].w = 320;
+    //btn->clips[ CLIP_MOUSEOUT ].h = 240;
 
-    btn->clips[ CLIP_MOUSEDOWN ].x = 0;
-    btn->clips[ CLIP_MOUSEDOWN ].y = 240;
-    btn->clips[ CLIP_MOUSEDOWN ].w = 320;
-    btn->clips[ CLIP_MOUSEDOWN ].h = 240;
+    //btn->clips[ CLIP_MOUSEDOWN ].x = 0;
+    //btn->clips[ CLIP_MOUSEDOWN ].y = 240;
+    //btn->clips[ CLIP_MOUSEDOWN ].w = 320;
+    //btn->clips[ CLIP_MOUSEDOWN ].h = 240;
 
-    btn->clips[ CLIP_MOUSEUP ].x = 320;
-    btn->clips[ CLIP_MOUSEUP ].y = 240;
-    btn->clips[ CLIP_MOUSEUP ].w = 320;
-    btn->clips[ CLIP_MOUSEUP ].h = 240;
+    //btn->clips[ CLIP_MOUSEUP ].x = 320;
+    //btn->clips[ CLIP_MOUSEUP ].y = 240;
+    //btn->clips[ CLIP_MOUSEUP ].w = 320;
+    //btn->clips[ CLIP_MOUSEUP ].h = 240;
 }
 
 Uint32 button_palette(SDL_Surface *sf, SDL_Color *col)

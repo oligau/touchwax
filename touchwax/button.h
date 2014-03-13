@@ -7,8 +7,8 @@
 
 struct button {
   SDL_Rect rect;
-  SDL_Rect *clip;
-  SDL_Rect clips[4];
+  //SDL_Rect *clip;
+  //SDL_Rect clips[4];
   SDL_Surface *buttonSheet;
   SDL_Color *col;
   SDL_Renderer *renderer;

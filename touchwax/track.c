@@ -6,7 +6,7 @@
 
 struct track tracks[2]; // extern from track.h
 
-void track_reset(unsigned int index)
+void track_init(unsigned int index)
 {
   tracks[index].id = 0;
   tracks[index].ppm_pos = 0;
@@ -14,13 +14,8 @@ void track_reset(unsigned int index)
   tracks[index].rate = 0;
   tracks[index].position = 0;
   tracks[index].scale = 8;
-  tracks[index].pitch = 0;
+  tracks[index].pitch = 1;
   tracks[index].play = 0;
-}
-
-void track_init(unsigned int index)
-{
-  track_reset(index);
 }
 
 int track_get_deck(int track_id)
@@ -67,4 +62,22 @@ void track_toggle_play(int d)
     tracks[d].play = 1;    
   }
   
+}
+
+void track_reverse_play(int d)
+{
+  tracks[d].pitch = -tracks[0].pitch;
+  
+  if(tracks[d].play) {
+    osc_send_pitch(d, tracks[d].pitch);
+  }
+  fprintf(stderr, "reverse deck %i pitch %f\n", d, tracks[d].pitch);
+  
+}
+
+void track_reset(int d)
+{
+  osc_send_position(d, 0);
+  
+  fprintf(stderr, "reset deck %i\n", d);
 }

@@ -24,11 +24,12 @@ struct track {
 
 extern struct track tracks[2];
 
-void track_reset(unsigned int index);
 void track_init(unsigned int index);
 int track_get_deck(int track_id);
 void track_add_ppm_block(int track_id, unsigned char *ppm_block, int size);
 unsigned char track_get_ppm(struct track *tr, unsigned int sp);
 void track_toggle_play(int d);
+void track_reverse_play(int d);
+void track_reset(int d);
 
 #endif

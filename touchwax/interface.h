@@ -18,6 +18,8 @@ struct twinterface{
   struct closeup *closeup;  
   struct overview *overview;  
   struct button *btn_play;
+  struct button *btn_reset;
+  struct button *btn_reverse; 
   struct button *btn_deck;
   struct fader *fader;
   int last_track_length;
@@ -25,6 +27,8 @@ struct twinterface{
   
 };
 
+void interface_button_reset_callback(struct twinterface *twinterface);
+void interface_button_reverse_callback(struct twinterface *twinterface);
 void interface_button_play_callback(struct twinterface *twinterface);
 void interface_button_deck_callback(struct twinterface *twinterface);
 

@@ -13,6 +13,7 @@ struct fader *fader_init(int x, int y, int w, int h, int heigth, SDL_Renderer *r
   fader->rect.h = h;
   fader->clicked = 0;
   fader->heigth = heigth;
+  fader->pitch = 1.0f;
   fader->col = &fader_col;
   fader->renderer = renderer;
   fader->twinterface = twinterface;
@@ -82,7 +83,8 @@ int fader_handle_events(struct fader *fader, SDL_Event event, int heigth)
     } else if( event.type == SDL_MOUSEMOTION )
     {
             if(fader->clicked) {
-                fader->rect.y = event.motion.y - fader->rect.h/2;
+                fader->rect.y = event.motion.y;
+
                 
                 //Send pitch information
                 fader_pitch(fader);
@@ -107,6 +109,20 @@ void fader_update_texture(struct fader *fader)
 
 void fader_show(struct fader *fader)
 {
+    // Move fader to current pitch position
+    float first = 0.84f;
+    float last = 1.16f;
+    float from_0_to_1 = (fader->pitch - first) / (last - first);
+    float from_0_to_2 = from_0_to_1 * 2;
+    float from_minus1_to_plus1 = from_0_to_2 - 1;
+    
+    float min = 0.0f;
+    float max = (float) fader->twinterface->viewport.h/2;
+    fader->rect.y = from_minus1_to_plus1 * (max-min) + min;
+    fader->rect.y += (float) fader->twinterface->viewport.h/2;
+    fader->rect.y -= fader->rect.h/2;
+    
+    // Tell GPU to draw texture at rect destination
     SDL_RenderCopy(fader->renderer, fader->texture, NULL, &fader->rect);
 }
 
@@ -126,8 +142,16 @@ Uint32 fader_palette(SDL_Surface *sf, SDL_Color *col)
 void fader_pitch(struct fader *fader)
 {
     float y = ((float) fader->rect.y )/ fader->heigth;
-    float min = 0.86f;
+    float min = 0.84f;
     float max = 1.16f;
-    float pitch = y * (max-min) + min;
-    tracks[fader->twinterface->deck].pitch = pitch;
+    fader->pitch = y * (max-min) + min;
+    
+    if(tracks[fader->twinterface->deck].pitch < 0){
+      tracks[fader->twinterface->deck].pitch = -fader->pitch;
+    } else {
+      tracks[fader->twinterface->deck].pitch = fader->pitch;
+    }
+    
+    fprintf(stderr, "fader: new pitch %f\n", fader->pitch);
+    
 }

@@ -11,6 +11,7 @@ struct fader {
   SDL_Rect rect;
   int clicked;
   int heigth;
+  float pitch;
   SDL_Color *col;
   SDL_Renderer *renderer;
   SDL_Surface *surface;

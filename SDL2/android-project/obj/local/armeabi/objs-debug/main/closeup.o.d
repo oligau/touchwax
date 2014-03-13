@@ -84,8 +84,9 @@ obj/local/armeabi/objs-debug/main/closeup.o: jni/src/closeup.c \
  jni/src/../SDL2/include/SDL_messagebox.h \
  jni/src/../SDL2/include/SDL_power.h jni/src/../SDL2/include/SDL_render.h \
  jni/src/../SDL2/include/SDL_system.h jni/src/../SDL2/include/SDL_timer.h \
- jni/src/../SDL2/include/SDL_version.h jni/src/track.h jni/src/osc.h \
- jni/src/../lo/lo/lo.h jni/src/../lo/lo/lo_endian.h \
+ jni/src/../SDL2/include/SDL_version.h jni/src/interface.h \
+ jni/src/track.h jni/src/osc.h jni/src/../lo/lo/lo.h \
+ jni/src/../lo/lo/lo_endian.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/netinet/in.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/linux/socket.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/asm/socket.h \
@@ -105,7 +106,7 @@ obj/local/armeabi/objs-debug/main/closeup.o: jni/src/closeup.c \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/sys/socket.h \
  jni/src/../lo/lo/lo_osc_types.h jni/src/../lo/lo/lo_errors.h \
  jni/src/../lo/lo/lo_lowlevel.h jni/src/../lo/lo/lo_serverthread.h \
- jni/src/../lo/lo/lo_macros.h jni/src/interface.h \
+ jni/src/../lo/lo/lo_macros.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/android/log.h
 
 /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/unistd.h:
@@ -302,6 +303,8 @@ jni/src/../SDL2/include/SDL_timer.h:
 
 jni/src/../SDL2/include/SDL_version.h:
 
+jni/src/interface.h:
+
 jni/src/track.h:
 
 jni/src/osc.h:
@@ -353,7 +356,5 @@ jni/src/../lo/lo/lo_lowlevel.h:
 jni/src/../lo/lo/lo_serverthread.h:
 
 jni/src/../lo/lo/lo_macros.h:
-
-jni/src/interface.h:
 
 /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/android/log.h:
