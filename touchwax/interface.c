@@ -27,22 +27,22 @@ static SDL_Color background_col = {31, 4, 0, 255};
 
 void interface_button_reset_callback(struct twinterface *twinterface)
 {
-    track_reset(twinterface->deck);
+    track_reset(twinterface->current_deck);
 }
 
 void interface_button_reverse_callback(struct twinterface *twinterface)
 {
-    track_reverse_play(twinterface->deck);
+    track_reverse_play(twinterface->current_deck);
 }
 
 void interface_button_play_callback(struct twinterface *twinterface)
 {
-    track_toggle_play(twinterface->deck, twinterface->fader->pitch);
+    track_toggle_play(twinterface->current_deck, twinterface->fader->pitch);
 }
 
 int interface_button_play_color_callback(struct twinterface *twinterface, int depressed)
 {
-    if(tracks[twinterface->deck].pitch == 0.0f)
+    if(tracks[twinterface->current_deck].pitch == 0.0f)
         return 0;
     else
         return 1;
@@ -55,12 +55,12 @@ int interface_button_reset_color_callback(struct twinterface *twinterface, int d
 
 int interface_button_deck_color_callback(struct twinterface *twinterface, int depressed)
 {
-    return twinterface->deck;
+    return twinterface->current_deck;
 }
 
 int interface_button_reverse_color_callback(struct twinterface *twinterface, int depressed)
 {
-    if(tracks[twinterface->deck].pitch < 0.0f)
+    if(tracks[twinterface->current_deck].pitch < 0.0f)
         return 0;
     else
         return 1;
@@ -70,8 +70,8 @@ void interface_button_deck_callback(struct twinterface *twinterface)
 {
     interface_closeup_free(twinterface);
     
-    twinterface->deck = (twinterface->deck + 1) % 2;
-    fprintf(stderr, "interface_button_play_callback: switched to deck %i\n", twinterface->deck);
+    twinterface->current_deck = (twinterface->current_deck + 1) % 2;
+    fprintf(stderr, "interface_button_play_callback: switched to deck %i\n", twinterface->current_deck);
     
     interface_update_closeup(twinterface);
     interface_update_overview(twinterface);
@@ -293,7 +293,7 @@ struct twinterface*interface_init()
     twinterface->timer = SDL_AddTimer(REFRESH, ticker, NULL);
     
     /* Show deck 0 */
-    twinterface->deck = 0;
+    twinterface->current_deck = 0;
     
     /* Initialize widgets */
     interface_widgets_init(twinterface);

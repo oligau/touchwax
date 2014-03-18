@@ -41,7 +41,7 @@ struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_R
   closeup->rect.h = h;
   closeup->clicked = 0;
   closeup->renderer = renderer;
-  closeup->tr = &tracks[twinterface->deck];
+  closeup->tr = &tracks[twinterface->current_deck];
   closeup->twinterface = twinterface;
   
   
@@ -564,7 +564,7 @@ void closeup_handle_events(struct closeup *closeup, SDL_Event event)
             
             if(closeup->clicked) {
                 //tracks[0].position = tracks[0].position + x;
-                osc_send_position(closeup->twinterface->deck, closeup->tr->position - y/100);
+                osc_send_position(closeup->twinterface->current_deck, closeup->tr->position - y/100);
                 //printf("x:%f y:%f\n", x, y);
             }
             

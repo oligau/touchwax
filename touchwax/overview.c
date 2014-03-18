@@ -13,7 +13,7 @@ struct overview *overview_init(int x, int y, int w, int h, struct track *tr, SDL
   overview->rect.w = w;
   overview->rect.h = h;
   overview->clicked = 0;
-  overview->tr = &tracks[twinterface->deck];  
+  overview->tr = &tracks[twinterface->current_deck];  
   overview->renderer = renderer;
   
   /* SDL interprets each pixel as a 32-bit number, so our masks must depend

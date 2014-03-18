@@ -93,8 +93,8 @@ int fader_handle_events(struct fader *fader, SDL_Event event, int heigth)
                 
                 //Send pitch information
                 fader_pitch(fader);
-                if(tracks[fader->twinterface->deck].play)
-                    osc_send_pitch(fader->twinterface->deck, tracks[fader->twinterface->deck].pitch);
+                if(tracks[fader->twinterface->current_deck].play)
+                    osc_send_pitch(fader->twinterface->current_deck, tracks[fader->twinterface->current_deck].pitch);
                 
                 return 1;
             }
@@ -151,10 +151,10 @@ void fader_pitch(struct fader *fader)
     float max = 1.16f;
     fader->pitch = y * (max-min) + min;
     
-    if(tracks[fader->twinterface->deck].pitch < 0){
-      tracks[fader->twinterface->deck].pitch = -fader->pitch;
+    if(tracks[fader->twinterface->current_deck].pitch < 0){
+      tracks[fader->twinterface->current_deck].pitch = -fader->pitch;
     } else {
-      tracks[fader->twinterface->deck].pitch = fader->pitch;
+      tracks[fader->twinterface->current_deck].pitch = fader->pitch;
     }
     
     fprintf(stderr, "fader: new pitch %f\n", fader->pitch);

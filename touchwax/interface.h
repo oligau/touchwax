@@ -14,7 +14,8 @@ struct twinterface{
   SDL_Surface *surface;
   SDL_Renderer *renderer;
   SDL_Texture *texture;
-  SDL_TimerID timer; 
+  SDL_TimerID timer;
+  struct deck *deck[2];
   struct closeup *closeup;  
   struct overview *overview;  
   struct button *btn_play;
@@ -23,7 +24,7 @@ struct twinterface{
   struct button *btn_deck;
   struct fader *fader;
   int last_track_length;
-  int deck;
+  int current_deck;
   
 };
 
