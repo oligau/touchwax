@@ -28,11 +28,13 @@ struct twinterface{
 };
 
 void interface_button_reset_callback(struct twinterface *twinterface);
+int interface_button_play_color_callback(struct twinterface *twinterface, int depressed);
 void interface_button_reverse_callback(struct twinterface *twinterface);
-int interface_button_reverse_color_callback(struct twinterface *twinterface);
+int interface_button_reverse_color_callback(struct twinterface *twinterface, int depressed);
 void interface_button_play_callback(struct twinterface *twinterface);
-int interface_button_play_color_callback(struct twinterface *twinterface);
+int interface_button_play_color_callback(struct twinterface *twinterface, int depressed);
 void interface_button_deck_callback(struct twinterface *twinterface);
+int interface_button_play_deck_callback(struct twinterface *twinterface, int depressed);
 
 void interface_update_overview(struct twinterface *twinterface);
 void interface_closeup_init(struct twinterface *twinterface);

@@ -56,10 +56,12 @@ void track_toggle_play(int d, float pitch)
   if(tracks[d].play) {
     osc_send_pitch(d, 0); //stop
     tracks[d].play = 0;
+    printf("track stop\n");
   }
   else {
     osc_send_pitch(d, pitch); //play
-    tracks[d].play = 1;    
+    tracks[d].play = 1;  
+    printf("track play\n");  
   }
   
 }

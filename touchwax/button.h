@@ -15,7 +15,7 @@ struct button {
   SDL_Surface *surface;
   SDL_Texture *texture;
   void* (*callback)(struct twinterface *twinterface);
-  int (*color_callback)(struct twinterface *twinterface);
+  int (*color_callback)(struct twinterface *twinterface, int depressed);
 
 };
 

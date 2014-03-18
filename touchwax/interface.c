@@ -40,7 +40,7 @@ void interface_button_play_callback(struct twinterface *twinterface)
     track_toggle_play(twinterface->deck, twinterface->fader->pitch);
 }
 
-int interface_button_play_color_callback(struct twinterface *twinterface)
+int interface_button_play_color_callback(struct twinterface *twinterface, int depressed)
 {
     if(tracks[twinterface->deck].pitch == 0.0f)
         return 0;
@@ -48,7 +48,17 @@ int interface_button_play_color_callback(struct twinterface *twinterface)
         return 1;
 }
 
-int interface_button_reverse_color_callback(struct twinterface *twinterface)
+int interface_button_reset_color_callback(struct twinterface *twinterface, int depressed)
+{
+    return depressed;
+}
+
+int interface_button_deck_color_callback(struct twinterface *twinterface, int depressed)
+{
+    return twinterface->deck;
+}
+
+int interface_button_reverse_color_callback(struct twinterface *twinterface, int depressed)
 {
     if(tracks[twinterface->deck].pitch < 0.0f)
         return 0;
@@ -135,7 +145,7 @@ void interface_widgets_init(struct twinterface *twinterface)
                       "button.bmp",
                       twinterface->renderer,
                       &interface_button_reset_callback,
-                      &interface_button_play_color_callback);  
+                      &interface_button_reset_color_callback);  
 
       
     if(twinterface->btn_reverse)
@@ -158,7 +168,7 @@ void interface_widgets_init(struct twinterface *twinterface)
                       "button.bmp",
                       twinterface->renderer,
                       &interface_button_deck_callback,
-                      &interface_button_play_color_callback);
+                      &interface_button_deck_color_callback);
                       
     if(twinterface->fader)
         fader_free(twinterface->fader);                      
@@ -234,6 +244,18 @@ struct twinterface*interface_init()
       SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Render creation for surface fail : %s\n",SDL_GetError());
       return twinterface;
     }    
+    
+    /* Verify blending support */
+    //SDL_RendererInfo info;
+    //SDL_GetRendererInfo(twinterface->renderer, &info);
+    //SDL_BlendMode blend_mode;
+    //SDL_GetRenderDrawBlendMode(twinterface->renderer, &blend_mode);
+    //printf("Renderer blend_modes: %i\n", blend_mode);
+    
+    //printf("Enabling renderer SDL_BLENDMODE_BLEND: %i\n", blend_mode);
+    //SDL_SetRenderDrawBlendMode(twinterface->renderer, SDL_BLENDMODE_BLEND);
+    //SDL_GetRenderDrawBlendMode(twinterface->renderer, &blend_mode);
+    //printf("Renderer blend_modes: %i\n", blend_mode);
     
     /* Get the Size of drawing surface */
     SDL_RenderGetViewport(twinterface->renderer, &twinterface->viewport);

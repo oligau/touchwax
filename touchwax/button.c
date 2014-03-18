@@ -23,7 +23,7 @@ struct button *button_init(int x, int y, int w, int h, const char *filename, SDL
   //btn->buttonSheet = button_load_image(filename);
   btn->buttonSheet = 0;
   //btn->clip = &(btn->clips[ CLIP_MOUSEOUT ]);
-  btn->col = &stop_col;
+  btn->col = &play_col;
   btn->renderer = renderer;
   btn->callback = callback;
   btn->color_callback = color_callback;
@@ -50,6 +50,9 @@ struct button *button_init(int x, int y, int w, int h, const char *filename, SDL
   /* create texture that links the surface to gpu */
   btn->texture = SDL_CreateTexture(btn->renderer, SDL_PIXELFORMAT_ARGB8888, 
                     SDL_TEXTUREACCESS_STREAMING, w, h);
+                    
+  SDL_SetTextureBlendMode(btn->texture, SDL_BLENDMODE_BLEND);
+  SDL_SetTextureAlphaMod(btn->texture, 128);
 
   button_update_texture(btn);
   return btn;
@@ -80,21 +83,30 @@ int button_handle_events(struct button *btn, SDL_Event event, struct twinterface
                 btn->callback(twinterface);
                 
                 // Swap color
-                if(btn->color_callback(twinterface))
+                if(btn->color_callback(twinterface, 1))
                   btn->col = &stop_col;
                 else
                   btn->col = &play_col;
                   
                 // Update gpu texture with current color
                 button_update_texture(btn);
+                SDL_SetTextureAlphaMod(btn->texture, 255);
                 
                 return 1;  
             }
         }
     } else if( event.type == SDL_MOUSEBUTTONUP )
     {
-      if( ( x > btn->rect.x ) && ( x < btn->rect.x + btn->rect.w ) && ( y > btn->rect.y ) && ( y < btn->rect.y + btn->rect.h ) )
-        return 1;
+        // Swap color
+        if(btn->color_callback(twinterface, 0))
+          btn->col = &stop_col;
+        else
+          btn->col = &play_col;
+          
+        // Update gpu texture with current color
+        button_update_texture(btn);
+        
+        SDL_SetTextureAlphaMod(btn->texture, 128);
     }
     
     return 0;

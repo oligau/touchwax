@@ -41,8 +41,11 @@ struct fader *fader_init(int x, int y, int w, int h, int heigth, SDL_Renderer *r
   fader->texture = SDL_CreateTexture(fader->renderer, SDL_PIXELFORMAT_ARGB8888, 
                     SDL_TEXTUREACCESS_STREAMING, w, h);
 
-  fader_update_texture(fader);
+  SDL_SetTextureBlendMode(fader->texture, SDL_BLENDMODE_BLEND);
+  SDL_SetTextureAlphaMod(fader->texture, 128);
 
+  fader_update_texture(fader);
+  
   return fader;
 }
 
@@ -69,6 +72,7 @@ int fader_handle_events(struct fader *fader, SDL_Event event, int heigth)
                 && ( y > fader->rect.y ) && ( y < fader->rect.y + fader->rect.h ) )
             {
                 fader->clicked = 1;
+                SDL_SetTextureAlphaMod(fader->texture, 255);
                 return 1;
             }
         }
@@ -78,6 +82,7 @@ int fader_handle_events(struct fader *fader, SDL_Event event, int heigth)
         if( event.button.button == SDL_BUTTON_LEFT )
         {
             fader->clicked = 0;
+            SDL_SetTextureAlphaMod(fader->texture, 128);
         }
         
     } else if( event.type == SDL_MOUSEMOTION )
@@ -136,7 +141,7 @@ void fader_free(struct fader *fader)
 
 Uint32 fader_palette(SDL_Surface *sf, SDL_Color *col)
 {
-    return SDL_MapRGB(sf->format, col->r, col->g, col->b);
+    return SDL_MapRGBA(sf->format, col->r, col->g, col->b, col->a);
 }
 
 void fader_pitch(struct fader *fader)
