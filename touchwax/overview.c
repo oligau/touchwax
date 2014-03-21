@@ -15,6 +15,7 @@ struct overview *overview_init(int x, int y, int w, int h, struct track *tr, SDL
   overview->clicked = 0;
   overview->tr = &tracks[twinterface->current_deck];  
   overview->renderer = renderer;
+  overview->twinterface = twinterface;
   
   /* SDL interprets each pixel as a 32-bit number, so our masks must depend
     on the endianness (byte order) of the machine */
@@ -34,9 +35,21 @@ struct overview *overview_init(int x, int y, int w, int h, struct track *tr, SDL
                                    rmask, gmask, bmask, amask);
   overview->texture = SDL_CreateTexture(overview->renderer, SDL_PIXELFORMAT_ARGB8888, 
                     SDL_TEXTUREACCESS_STREAMING, w, h); 
+
+  overview->playhead_surface = SDL_CreateRGBSurface(0, w, 1, 32,
+                                   rmask, gmask, bmask, amask);
+  overview->playhead_texture = SDL_CreateTexture(overview->renderer, SDL_PIXELFORMAT_ARGB8888, 
+                    SDL_TEXTUREACCESS_STREAMING, w, 1);
+                    
+  SDL_FillRect(overview->playhead_surface, NULL, overview_palette(overview->playhead_surface, &needle_col));
+  SDL_UpdateTexture(overview->playhead_texture, NULL, overview->playhead_surface->pixels, overview->playhead_surface->pitch);   
+
+  //SDL_SetTextureBlendMode(overview->texture, SDL_BLENDMODE_BLEND);
+  //SDL_SetTextureAlphaMod(overview->texture, 255);
+                    
   overview_draw(overview);
   SDL_UpdateTexture(overview->texture, NULL, overview->surface->pixels, overview->surface->pitch);    
-
+  
   printf("overview inited.\n");
   return overview;
 }
@@ -45,14 +58,14 @@ int overview_handle_events(struct overview *overview, SDL_Event event)
 {
     
     //The mouse offsets
-    float /*x = 0.0,*/ y = 0.0;
+    int x = 0.0, y = 0.0;
 
     //If a mouse button was pressed
     if( event.type == SDL_MOUSEMOTION )
     {
              //Get the mouse offsets
             //x = (float) event.motion.xrel;
-            y = (float) event.motion.y;
+            y = event.motion.y;
 
             ////If the mouse is over the button
             //if( ( x > btn->box.x ) && ( x < btn->box.x + btn->box.w ) && ( y > btn->box.y ) && ( y < btn->box.y + btn->box.h ) )
@@ -61,38 +74,50 @@ int overview_handle_events(struct overview *overview, SDL_Event event)
             //}
             
             if(overview->clicked) {
-                float pourcent = y / overview->rect.h;
-                tracks[0].position = tracks[0].length * pourcent;
-
-                osc_send_position(0, tracks[0].position);
-                //printf("x:%f y:%f\n", x, y);
+                overview_jump(overview, y);
+                return 1;
             }
-            
-            return 1;
     } else if( event.type == SDL_MOUSEBUTTONDOWN ) { 
         if( event.button.button == SDL_BUTTON_LEFT) {
-           if( ( event.button.x > overview->rect.x ) && 
-                        ( event.button.x < overview->rect.x + overview->rect.w ) && 
-                        ( event.button.y > overview->rect.y ) && 
-                        ( event.button.y < overview->rect.y + overview->rect.h ) ) {
+            //Get the mouse offsets
+            x = event.button.x;
+            y = event.button.y;
+            
+            if( ( x > overview->rect.x ) && ( x < overview->rect.x + overview->rect.w ) 
+                && ( y > overview->rect.y ) && ( y < overview->rect.y + overview->rect.h ) ) 
+            {
+                printf("overview clicked\n");
                 overview->clicked = 1;
+                overview_jump(overview, y);
                 return 1;              
             }
         }
     } else if( event.type == SDL_MOUSEBUTTONUP ) { 
         if( event.button.button == SDL_BUTTON_LEFT ) {
            overview->clicked = 0;
-           return 1;
         }
     }
     
     return 0;
 }
+
+void overview_jump(struct overview *overview, int y)
+{
+    float pourcent = (float) y / (float) overview->rect.h;
+    float length = (float) tracks[overview->twinterface->current_deck].length / (float) tracks[overview->twinterface->current_deck].rate;
+    tracks[overview->twinterface->current_deck].position =  length * pourcent;
+
+    osc_send_position(overview->twinterface->current_deck, tracks[overview->twinterface->current_deck].position);
+    //printf("deck %i jumped to position %f\n", overview->twinterface->current_deck, tracks[overview->twinterface->current_deck].position);
+    //printf("y:%i\n", y);
+}
   
   
 void overview_show(struct overview *overview)
 {
-    SDL_RenderCopy(overview->renderer, overview->texture, NULL, &overview->rect);      
+    SDL_RenderCopy(overview->renderer, overview->texture, NULL, &overview->rect);  
+    SDL_RenderCopy(overview->renderer, overview->playhead_texture, NULL, &overview->rect);      
+
 
 }
   
@@ -206,4 +231,9 @@ void overview_free(struct overview *overview)
   SDL_FreeSurface(overview->surface);
   SDL_DestroyTexture(overview->texture);  
   free(overview);
+}
+
+Uint32 overview_palette(SDL_Surface *sf, SDL_Color *col)
+{
+    return SDL_MapRGB(sf->format, col->r, col->g, col->b);
 }

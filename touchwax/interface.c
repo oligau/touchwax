@@ -80,15 +80,8 @@ void interface_button_deck_callback(struct twinterface *twinterface)
 
 void interface_update_overview(struct twinterface *twinterface)
 {
-    if(twinterface->overview)
-        overview_free(twinterface->overview);
-    twinterface->overview = overview_init(0,
-                           0, 
-                           100,
-                           twinterface->viewport.h, 
-                           &tracks[0],
-                           twinterface->renderer,
-                           twinterface);
+    interface_overview_init(twinterface);
+    printf("Updated overview.\n");
 }
 
 
@@ -111,17 +104,30 @@ void interface_closeup_init(struct twinterface *twinterface)
                            twinterface);
 }
 
+void interface_overview_init(struct twinterface *twinterface)
+{     
+    if(twinterface->overview)
+        overview_free(twinterface->overview);
+    twinterface->overview = overview_init(0,
+                           0, 
+                           100,
+                           twinterface->viewport.h, 
+                           &tracks[0],
+                           twinterface->renderer,
+                           twinterface);
+}
+
 void interface_widgets_init(struct twinterface *twinterface)
 {
-    //if(twinterface->overview)
-        //overview_free(twinterface->overview);
-    //twinterface->overview = overview_init(0,
-                           //0, 
-                           //100,
-                           //twinterface->viewport.h, 
-                           //&tracks[0],
-                           //twinterface->renderer,
-                           //twinterface);
+    if(twinterface->overview)
+        overview_free(twinterface->overview);
+    twinterface->overview = overview_init(0,
+                           0, 
+                           100,
+                           twinterface->viewport.h, 
+                           &tracks[0],
+                           twinterface->renderer,
+                           twinterface);
                            
     interface_closeup_init(twinterface);    
                            
@@ -161,7 +167,7 @@ void interface_widgets_init(struct twinterface *twinterface)
                       
     if(twinterface->btn_deck)
         button_free(twinterface->btn_deck);
-    twinterface->btn_deck = button_init(0,
+    twinterface->btn_deck = button_init(100,
                       twinterface->viewport.h-100, 
                       100, 
                       100, 
@@ -244,18 +250,6 @@ struct twinterface*interface_init()
       SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Render creation for surface fail : %s\n",SDL_GetError());
       return twinterface;
     }    
-    
-    /* Verify blending support */
-    //SDL_RendererInfo info;
-    //SDL_GetRendererInfo(twinterface->renderer, &info);
-    //SDL_BlendMode blend_mode;
-    //SDL_GetRenderDrawBlendMode(twinterface->renderer, &blend_mode);
-    //printf("Renderer blend_modes: %i\n", blend_mode);
-    
-    //printf("Enabling renderer SDL_BLENDMODE_BLEND: %i\n", blend_mode);
-    //SDL_SetRenderDrawBlendMode(twinterface->renderer, SDL_BLENDMODE_BLEND);
-    //SDL_GetRenderDrawBlendMode(twinterface->renderer, &blend_mode);
-    //printf("Renderer blend_modes: %i\n", blend_mode);
     
     /* Get the Size of drawing surface */
     SDL_RenderGetViewport(twinterface->renderer, &twinterface->viewport);
@@ -403,8 +397,8 @@ void interface_loop(struct twinterface *twinterface)
              !button_handle_events(twinterface->btn_play, e, twinterface) &&
              !button_handle_events(twinterface->btn_reset, e, twinterface) &&
              !button_handle_events(twinterface->btn_reverse, e, twinterface) &&
-             !button_handle_events(twinterface->btn_deck, e, twinterface)/* &&
-             !overview_handle_events(overview, e)*/)
+             !button_handle_events(twinterface->btn_deck, e, twinterface) &&
+             !overview_handle_events(twinterface->overview, e))
                 closeup_handle_events(twinterface->closeup, e);
       
       /* draw each widgets to surface if timer said so */
@@ -419,13 +413,14 @@ void interface_loop(struct twinterface *twinterface)
           /* Listen for track change, if change update closeup */       
           if(twinterface->last_track_length != tracks[0].length) {
             interface_closeup_init(twinterface);
+            interface_overview_init(twinterface);
             twinterface->last_track_length = tracks[0].length;
           }
           
           /* Render widgets on surface */
           if(twinterface->closeup)
             closeup_show(twinterface->closeup);  
-          //overview_show(twinterface->overview);
+          overview_show(twinterface->overview);
           button_show(twinterface->btn_play);
           button_show(twinterface->btn_reset);
           button_show(twinterface->btn_reverse);          

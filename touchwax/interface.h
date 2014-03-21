@@ -40,6 +40,7 @@ int interface_button_play_deck_callback(struct twinterface *twinterface, int dep
 void interface_update_overview(struct twinterface *twinterface);
 void interface_closeup_init(struct twinterface *twinterface);
 void interface_closeup_free(struct twinterface *twinterface);
+void interface_overview_init(struct twinterface *twinterface);
 void interface_widgets_init(struct twinterface *twinterface);
 struct twinterface*interface_init();
 void interface_resize(struct twinterface *twinterface, int w, int h);

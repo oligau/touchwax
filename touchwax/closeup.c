@@ -155,7 +155,10 @@ struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_R
   closeup->tiles[4]->texture = SDL_CreateTexture(closeup->renderer, SDL_PIXELFORMAT_ARGB8888, 
                     SDL_TEXTUREACCESS_STREAMING, CLOSEUP_WAVEFORM_WIDTH, closeup->padded_h);
   closeup->playhead->texture = SDL_CreateTexture(closeup->renderer, SDL_PIXELFORMAT_ARGB8888, 
-                    SDL_TEXTUREACCESS_STREAMING, CLOSEUP_WAVEFORM_WIDTH, 1);                   
+                    SDL_TEXTUREACCESS_STREAMING, CLOSEUP_WAVEFORM_WIDTH, 1);     
+  
+  SDL_SetTextureBlendMode(closeup->playhead->texture, SDL_BLENDMODE_BLEND);
+  SDL_SetTextureAlphaMod(closeup->playhead->texture, 128);
                     
   SDL_UpdateTexture(closeup->tiles[0]->texture, NULL, closeup->tiles[0]->surface->pixels, closeup->tiles[0]->surface->pitch);    
   SDL_UpdateTexture(closeup->tiles[1]->texture, NULL, closeup->tiles[1]->surface->pixels, closeup->tiles[1]->surface->pitch);    
@@ -613,5 +616,5 @@ void closeup_free(struct closeup *closeup)
 
 Uint32 closeup_palette(SDL_Surface *sf, SDL_Color *col)
 {
-    return SDL_MapRGBA(sf->format, col->r, col->g, col->b, col->a);
+    return SDL_MapRGB(sf->format, col->r, col->g, col->b);
 }
