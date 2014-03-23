@@ -6,11 +6,13 @@
 #include "overview.h"
 #include "button.h"
 #include "fader.h"
+#include "label.h"
+
 #ifdef __ANDROID__
 #include <android/log.h>
 #endif
 
-#define TITLE "touchwax Copyright 2014 Olivier Gauthier <oligau@oscille.ca>"
+#define TITLE "touchwax 0.1 alpha 3 Copyright 2014 Olivier Gauthier <oligau@oscille.ca>"
 
 /* Screen refresh time in milliseconds */
 
@@ -76,6 +78,18 @@ void interface_button_deck_callback(struct twinterface *twinterface)
     interface_update_closeup(twinterface);
     interface_update_overview(twinterface);
     
+}
+
+void interface_button_touch_mode_callback(struct twinterface *twinterface)
+{
+    twinterface->closeup->touch_mode = (twinterface->closeup->touch_mode + 1) % 2;
+    fprintf(stderr, "interface_button_touch_mode_callback: switched to touch mode %i\n", twinterface->closeup->touch_mode);
+    
+}
+
+int interface_button_touch_mode_color_callback(struct twinterface *twinterface, int depressed)
+{
+    return twinterface->closeup->touch_mode;
 }
 
 void interface_update_overview(struct twinterface *twinterface)
@@ -167,7 +181,7 @@ void interface_widgets_init(struct twinterface *twinterface)
                       
     if(twinterface->btn_deck)
         button_free(twinterface->btn_deck);
-    twinterface->btn_deck = button_init(100,
+    twinterface->btn_deck = button_init(200,
                       twinterface->viewport.h-100, 
                       100, 
                       100, 
@@ -175,6 +189,26 @@ void interface_widgets_init(struct twinterface *twinterface)
                       twinterface->renderer,
                       &interface_button_deck_callback,
                       &interface_button_deck_color_callback);
+                      
+    if(twinterface->btn_touch_mode)
+        button_free(twinterface->btn_touch_mode);
+    twinterface->btn_touch_mode = button_init(100,
+                      twinterface->viewport.h-100, 
+                      100, 
+                      100, 
+                      "button.bmp",
+                      twinterface->renderer,
+                      &interface_button_touch_mode_callback,
+                      &interface_button_touch_mode_color_callback);
+
+    if(twinterface->label_pitch)
+        label_free(twinterface->label_pitch);
+    twinterface->label_pitch = label_init(twinterface->viewport.w-100,
+                      0, 
+                      100, 
+                      20, 
+                      "",
+                      twinterface->renderer);
                       
     if(twinterface->fader)
         fader_free(twinterface->fader);                      
@@ -237,7 +271,7 @@ struct twinterface*interface_init()
     }
 
     /* Create window and renderer for given surface */
-    twinterface->window = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    twinterface->window = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1280, 747, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if(!twinterface->window)
     {
       SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Window creation fail : %s\n",SDL_GetError());
@@ -398,6 +432,7 @@ void interface_loop(struct twinterface *twinterface)
              !button_handle_events(twinterface->btn_reset, e, twinterface) &&
              !button_handle_events(twinterface->btn_reverse, e, twinterface) &&
              !button_handle_events(twinterface->btn_deck, e, twinterface) &&
+             !button_handle_events(twinterface->btn_touch_mode, e, twinterface) &&
              !overview_handle_events(twinterface->overview, e))
                 closeup_handle_events(twinterface->closeup, e);
       
@@ -411,11 +446,18 @@ void interface_loop(struct twinterface *twinterface)
           SDL_RenderCopy(twinterface->renderer, twinterface->texture, NULL, NULL);                
                  
           /* Listen for track change, if change update closeup */       
-          if(twinterface->last_track_length != tracks[0].length) {
+          if(twinterface->last_track_length != tracks[twinterface->current_deck].length) {
             interface_closeup_init(twinterface);
             interface_overview_init(twinterface);
-            twinterface->last_track_length = tracks[0].length;
+            twinterface->last_track_length = tracks[twinterface->current_deck].length;
           }
+          
+          /* Update text labels */
+          char buf[128], *s;
+          s = buf;
+          sprintf(s, "%2.2f", twinterface->fader->pitch);
+          label_set_text(twinterface->label_pitch, s);
+          
           
           /* Render widgets on surface */
           if(twinterface->closeup)
@@ -425,6 +467,8 @@ void interface_loop(struct twinterface *twinterface)
           button_show(twinterface->btn_reset);
           button_show(twinterface->btn_reverse);          
           button_show(twinterface->btn_deck);
+          button_show(twinterface->btn_touch_mode);
+          label_show(twinterface->label_pitch);
           fader_show(twinterface->fader);
                
           /* Got everything on rendering surface,
@@ -458,9 +502,12 @@ void interface_free(struct twinterface *twinterface)
     button_free(twinterface->btn_play);
     button_free(twinterface->btn_reverse);
     button_free(twinterface->btn_deck);
+    button_free(twinterface->btn_touch_mode);
     fader_free(twinterface->fader);
     closeup_free(twinterface->closeup);
-    //overview_free(twinterface->overview);
+    overview_free(twinterface->overview);
+    
+    label_free(twinterface->label_pitch);
     
     SDL_FreeSurface(twinterface->surface);
     SDL_DestroyTexture(twinterface->texture);

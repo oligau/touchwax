@@ -22,6 +22,8 @@ struct twinterface{
   struct button *btn_reset;
   struct button *btn_reverse; 
   struct button *btn_deck;
+  struct button *btn_touch_mode;
+  struct label *label_pitch;
   struct fader *fader;
   int last_track_length;
   int current_deck;
@@ -36,6 +38,8 @@ void interface_button_play_callback(struct twinterface *twinterface);
 int interface_button_play_color_callback(struct twinterface *twinterface, int depressed);
 void interface_button_deck_callback(struct twinterface *twinterface);
 int interface_button_play_deck_callback(struct twinterface *twinterface, int depressed);
+void interface_button_touch_mode_callback(struct twinterface *twinterface);
+int interface_button_touch_mode_color_callback(struct twinterface *twinterface, int depressed);
 
 void interface_update_overview(struct twinterface *twinterface);
 void interface_closeup_init(struct twinterface *twinterface);

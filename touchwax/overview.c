@@ -116,7 +116,7 @@ void overview_jump(struct overview *overview, int y)
 void overview_show(struct overview *overview)
 {
     SDL_RenderCopy(overview->renderer, overview->texture, NULL, &overview->rect);  
-    SDL_RenderCopy(overview->renderer, overview->playhead_texture, NULL, &overview->rect);      
+    //SDL_RenderCopy(overview->renderer, overview->playhead_texture, NULL, &overview->rect);      
 
 
 }

@@ -23,8 +23,8 @@
 
 INSTALL ?= install
 
-#SDL_CFLAGS ?= `sdl-config --cflags` 
-#SDL_LIBS ?= `sdl-config --libs` -lSDL_ttf
+#SDL_CFLAGS ?= -I /usr/local/include/SDL2
+SDL_LIBS ?= -L/usr/local/lib -lSDL2 -lSDL2_ttf
 
 # Installation paths
 
@@ -39,7 +39,7 @@ DOCDIR ?= $(PREFIX)/share/doc
 
 #CFLAGS ?= -O3
 CFLAGS ?= -g
-CFLAGS += -Wall -I /usr/include/SDL2
+CFLAGS += -Wall -I /usr/include/SDL2 -I /usr/local/include/SDL2
 CPPFLAGS += -MMD
 LDFLAGS ?= -O3
 
@@ -52,6 +52,7 @@ OBJS = interface.o \
 	fader.o \
 	overview.o \
 	closeup.o \
+	label.o \
 	touchwax.o
 DEVICE_CPPFLAGS =
 DEVICE_LIBS =
@@ -65,7 +66,7 @@ all:		touchwax
 # Main binary
 
 touchwax:		$(OBJS)
-touchwax:		LDLIBS += $(SDL_LIBS) $(DEVICE_LIBS) -lm -llo -lSDL2
+touchwax:		LDLIBS += $(SDL_LIBS) $(DEVICE_LIBS) -lm -llo 
 touchwax:		LDFLAGS += -pthread
 
 interface.o:	CFLAGS += $(SDL_CFLAGS)

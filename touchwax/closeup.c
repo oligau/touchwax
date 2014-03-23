@@ -19,6 +19,9 @@
 #include <android/log.h>
 #endif
 
+#define CLOSEUP_TOUCH_MODE_CDDJ 0
+#define CLOSEUP_TOUCH_MODE_VINYL 1
+
 #define CLOSEUP_WAVEFORM_WIDTH 512
 
 static SDL_Color background_col = {31, 4, 0, 255},
@@ -40,6 +43,7 @@ struct closeup *closeup_init(int x, int y, int w, int h, struct track *tr, SDL_R
   closeup->rect.w = w;
   closeup->rect.h = h;
   closeup->clicked = 0;
+  closeup->touch_mode = CLOSEUP_TOUCH_MODE_CDDJ;
   closeup->renderer = renderer;
   closeup->tr = &tracks[twinterface->current_deck];
   closeup->twinterface = twinterface;
@@ -567,7 +571,11 @@ void closeup_handle_events(struct closeup *closeup, SDL_Event event)
             
             if(closeup->clicked) {
                 //tracks[0].position = tracks[0].position + x;
-                osc_send_position(closeup->twinterface->current_deck, closeup->tr->position - y/100);
+                
+                if(closeup->touch_mode == CLOSEUP_TOUCH_MODE_CDDJ)
+                  osc_send_position(closeup->twinterface->current_deck, closeup->tr->position - y/100);
+                else if(closeup->touch_mode == CLOSEUP_TOUCH_MODE_VINYL)
+                  osc_send_position(closeup->twinterface->current_deck, y/100);
                 //printf("x:%f y:%f\n", x, y);
             }
             

@@ -23,6 +23,7 @@ struct closeup {
   int nb_tile;
   int last_length;
   int clicked;
+  int touch_mode;
   SDL_Renderer *renderer;
   struct track *tr;
   struct twinterface *twinterface;
