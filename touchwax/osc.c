@@ -8,6 +8,8 @@
 #ifdef __ANDROID__
 #include <android/log.h>
 #endif
+
+#include "osc.h"
 #include "track.h"
 #include "interface.h"
 
@@ -26,24 +28,7 @@ int done = 0;
 const char ADDRESS[] = "10.10.10.1";
 #else
 const char ADDRESS[] = "127.0.0.1";
-#endif
-
-void error(int num, const char *m, const char *path);
-
-int generic_handler(const char *path, const char *types, lo_arg ** argv,
-                    int argc, void *data, void *user_data);
-
-int ppm_handler(const char *path, const char *types, lo_arg ** argv,
-                    int argc, void *data, void *user_data);
-
-int track_load_handler(const char *path, const char *types, lo_arg ** argv,
-                    int argc, void *data, void *user_data);
-                    
-int pos_handler(const char *path, const char *types, lo_arg ** argv,
-                    int argc, void *data, void *user_data);   
-
-int scale_handler(const char *path, const char *types, lo_arg ** argv,
-                    int argc, void *data, void *user_data);                   
+#endif                
 
 int osc_init(struct twinterface *twinterface)
 {
