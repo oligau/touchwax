@@ -47,7 +47,7 @@ void closeup_update_init(struct closeup *closeup);
 void closeup_start_tile_updater_thread(struct closeup *closeup);
 void *closeup_tile_updater(void *param);
 
-
+void closeup_cddj(struct closeup *closeup, int y);
 void closeup_update(struct closeup *closeup);
 void closeup_handle_events(struct closeup *closeup, SDL_Event event);
 void closeup_draw_waveform(struct closeup *closeup, SDL_Surface *surface, int offset, SDL_Color col);
