@@ -3,6 +3,10 @@
 
 #include "label.h"
 
+#ifdef __ANDROID__
+#include <android/log.h>
+#endif
+
 /* Macro functions */
 #define MIN(x,y) ((x)<(y)?(x):(y))
 
@@ -13,6 +17,7 @@
 /* List of directories to use as search path for fonts. */
 
 static const char *font_dirs[] = {
+    "",
     ".",
     "/usr/X11R6/lib/X11/fonts/TTF",
     "/usr/share/fonts/truetype/ttf-dejavu",
@@ -27,6 +32,62 @@ static const char *font_dirs[] = {
 
 static SDL_Color text_col = {255, 255, 255, 255},
                   background_col = {31, 4, 0, 255};
+
+//#ifdef __ANDROID__
+
+//#include <zip .h>
+//#include <zipint .h>
+//#include <jni .h>
+
+//char packageName[1024] = {0};
+//zip   *pkg_zip;
+
+//JNIEXPORT void JNICALL Java_ca_oscille_touchwax_setAppName( JNIEnv * env, jobject obj, jstring pkgname )
+//{
+   //const char *buffer = env->GetStringUTFChars( pkgname, false );
+
+   //int error;
+   //pkg_zip = zip_open( buffer, 0, &error );
+   //strcpy( packageName, buffer );
+   //if( pkg_zip == NULL ){
+      //LOGE("Failed to open apk: %i", error );
+   //}
+   //env->ReleaseStringUTFChars( pkgname, buffer );
+//}
+
+//bool zip_file_exists(const char* fname)
+//{
+   //if( pkg_zip != NULL )
+   //{
+      //int result = zip_name_locate( pkg_zip, fname, 0);
+      //return result != -1;
+   //}
+   //return false;
+//}
+
+//FILE *zip_file_open( const char* fname )
+//{
+   //zip_file *zfile = zip_fopen( pkg_zip, fname, 0 );
+   //uint32_t offset = 0;
+   //uint32_t length = 0;
+
+   //if( zfile != NULL )
+   //{
+      //offset = zfile->fpos;
+      //length = zfile->bytes_left;
+      //zip_fclose( zfile );
+      //zfile = NULL;
+   //} else
+   //{
+      //return NULL;
+   //}
+
+   //FILE *fp = NULL;
+   //fp = fopen( packageName, "rb" );
+   //fseek( fp, offset, SEEK_SET );
+   //return fp;
+//}
+//#endif
 
 
 struct label *label_init(int x, int y, int w, int h, const char *text, SDL_Renderer *renderer)
@@ -77,7 +138,10 @@ struct label *label_init(int x, int y, int w, int h, const char *text, SDL_Rende
       exit(-1);
   }
   
-  label_load_fonts(label);
+  if(label_load_fonts(label) == -1) {
+      fprintf(stderr, "%s\n", TTF_GetError());
+      exit(-1);
+  }
   
   /* Copy string */
   label_set_text(label, text);  
@@ -139,7 +203,13 @@ int label_load_fonts(struct label *label)
   
   label->font = label_open_font(BIG_FONT, BIG_FONT_SIZE);
   if (!label->font) {
+      
     printf("label_load_fonts: error: %s", TTF_GetError());
+    
+#ifdef __ANDROID__
+    __android_log_print(ANDROID_LOG_DEBUG, "label.c", "label_load_fonts: error: %s\n", TTF_GetError());
+#endif
+
     return -1;
   }
   

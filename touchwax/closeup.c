@@ -361,7 +361,7 @@ void *closeup_tile_updater(void *param)
 
 void closeup_update(struct closeup *closeup)
 {
-  if(closeup->nb_tile) {
+  if(closeup && closeup->nb_tile) {
         
     int pos = ((int)(closeup->tr->position * closeup->tr->rate) / 64);
     int current_tile = floor((pos / closeup->padded_h));
@@ -626,20 +626,25 @@ void closeup_free(struct closeup *closeup)
     //Sleep(1);
   //}
   
-  closeup->thread_tile_updater_done = 1;
-  pthread_join(closeup->thread_tile_updater, NULL);
+
   
-  int i;
-  for(i = 0; i < 5; ++i) {
-    SDL_FreeSurface(closeup->tiles[i]->surface);
-    SDL_DestroyTexture(closeup->tiles[i]->texture);
-    free(closeup->tiles[i]);
+  if(closeup) {
+    closeup->thread_tile_updater_done = 1;
+    pthread_join(closeup->thread_tile_updater, NULL);
     
-  }
-  free(closeup->playhead);
- 
-  free(closeup);
-  closeup = 0;
+    int i;
+    for(i = 0; i < 5; ++i) {
+      SDL_FreeSurface(closeup->tiles[i]->surface);
+      SDL_DestroyTexture(closeup->tiles[i]->texture);
+      free(closeup->tiles[i]);
+      
+    }
+    free(closeup->playhead);
+
+    free(closeup);
+    closeup->nb_tile = 0;
+    closeup = 0;
+  } 
 }
 
 Uint32 closeup_palette(SDL_Surface *sf, SDL_Color *col)

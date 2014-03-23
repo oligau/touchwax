@@ -131,8 +131,8 @@ void button_show(struct button *btn)
 
 void button_free(struct button *btn)
 {
-  if(btn->buttonSheet != NULL)
-    SDL_FreeSurface(btn->buttonSheet);
+  //if(btn->buttonSheet != NULL)
+  //  SDL_FreeSurface(btn->buttonSheet);
   SDL_FreeSurface(btn->surface);
   SDL_DestroyTexture(btn->texture);
   free(btn);

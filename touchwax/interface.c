@@ -201,14 +201,14 @@ void interface_widgets_init(struct twinterface *twinterface)
                       &interface_button_touch_mode_callback,
                       &interface_button_touch_mode_color_callback);
 
-    if(twinterface->label_pitch)
-        label_free(twinterface->label_pitch);
-    twinterface->label_pitch = label_init(twinterface->viewport.w-100,
-                      0, 
-                      100, 
-                      20, 
-                      "",
-                      twinterface->renderer);
+    //if(twinterface->label_pitch)
+        //label_free(twinterface->label_pitch);
+    //twinterface->label_pitch = label_init(twinterface->viewport.w-100,
+                      //0, 
+                      //100, 
+                      //20, 
+                      //"",
+                      //twinterface->renderer);
                       
     if(twinterface->fader)
         fader_free(twinterface->fader);                      
@@ -254,6 +254,8 @@ struct twinterface*interface_init()
     twinterface->btn_reset = 0;
     twinterface->btn_reverse = 0;
     twinterface->btn_deck = 0;
+    twinterface->btn_touch_mode = 0;
+    twinterface->label_pitch = 0;
     twinterface->fader = 0;
     twinterface->redraw = 0;
     twinterface->volumeup_pressed = 0;
@@ -456,7 +458,7 @@ void interface_loop(struct twinterface *twinterface)
           char buf[128], *s;
           s = buf;
           sprintf(s, "%2.2f", tracks[twinterface->current_deck].pitch);
-          label_set_text(twinterface->label_pitch, s);
+          //label_set_text(twinterface->label_pitch, s);
           
           
           /* Render widgets on surface */
@@ -468,7 +470,7 @@ void interface_loop(struct twinterface *twinterface)
           button_show(twinterface->btn_reverse);          
           button_show(twinterface->btn_deck);
           button_show(twinterface->btn_touch_mode);
-          label_show(twinterface->label_pitch);
+          //label_show(twinterface->label_pitch);
           fader_show(twinterface->fader);
                
           /* Got everything on rendering surface,
@@ -507,7 +509,7 @@ void interface_free(struct twinterface *twinterface)
     closeup_free(twinterface->closeup);
     overview_free(twinterface->overview);
     
-    label_free(twinterface->label_pitch);
+    //label_free(twinterface->label_pitch);
     
     SDL_FreeSurface(twinterface->surface);
     SDL_DestroyTexture(twinterface->texture);

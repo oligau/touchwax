@@ -41,6 +41,8 @@ int osc_init(struct twinterface *twinterface)
 
     /* add method that will match any path and args */
     lo_server_thread_add_method(st, "/xwax/ppm", "ibi", ppm_handler, NULL);
+    
+    lo_server_thread_add_method(st, "/xwax/ppm_end", "i", ppm_end_handler, NULL);
 
     /* add method that will match any path and args */
     lo_server_thread_add_method(st, "/xwax/track_load", "iissi", track_load_handler, NULL);
@@ -179,6 +181,24 @@ int ppm_handler(const char *path, const char *types, lo_arg ** argv,
      __android_log_print(ANDROID_LOG_DEBUG, "osc.c", "arg %d '%c' [%d byte blob]\nlength:%d", 0, types[0], size, tracks[track_get_deck(track_id)].length);
 #endif
 
+    //printf("\n");
+    //fflush(stdout);
+
+    return 1;
+}
+
+
+int ppm_end_handler(const char *path, const char *types, lo_arg ** argv,
+                    int argc, void *data, void *user_data)
+{
+
+    printf("ppm_handler: path: <%s>\n", path);
+#ifdef __ANDROID__
+    __android_log_print(ANDROID_LOG_DEBUG, "osc.c", "path: <%s>\n", path);
+#endif
+    
+    //interface_update_closeup(osc->twinterface);
+    
     //printf("\n");
     //fflush(stdout);
 
