@@ -45,7 +45,8 @@ public class SDLActivity extends Activity {
         //System.loadLibrary("SDL2_image");
         //System.loadLibrary("SDL2_mixer");
         //System.loadLibrary("SDL2_net");
-        //System.loadLibrary("SDL2_ttf");
+        System.loadLibrary("SDL2_ttf");
+        System.loadLibrary("libzip");
         System.loadLibrary("lo");
         System.loadLibrary("main");
     }
@@ -76,6 +77,16 @@ public class SDLActivity extends Activity {
         mLayout.addView(mSurface);
 
         setContentView(mLayout);
+        
+        // Send jni code the apk path
+        PackageInfo info = null;
+        try {
+           info = getContext().getPackageManager().getPackageInfo("ca.oscille.touchwax", 0);
+        } catch( NameNotFoundException e ) {
+           Log.e( TAG, e.toString() );
+           return;
+        }
+        setAppName( info.applicationInfo.sourceDir );
     }
 
     // Events

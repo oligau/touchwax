@@ -254,6 +254,7 @@ struct twinterface*interface_init()
     twinterface->btn_reset = 0;
     twinterface->btn_reverse = 0;
     twinterface->btn_deck = 0;
+    twinterface->btn_touch_mode = 0;
     twinterface->fader = 0;
     twinterface->redraw = 0;
     twinterface->volumeup_pressed = 0;

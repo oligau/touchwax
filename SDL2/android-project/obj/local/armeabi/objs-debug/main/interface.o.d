@@ -100,7 +100,9 @@ obj/local/armeabi/objs-debug/main/interface.o: jni/src/interface.c \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/sys/time.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/linux/time.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/sched.h \
- jni/src/overview.h jni/src/button.h jni/src/fader.h \
+ jni/src/overview.h jni/src/button.h jni/src/fader.h jni/src/label.h \
+ jni/SDL2_ttf/SDL_ttf.h jni/src/../SDL2/include/begin_code.h \
+ jni/src/../SDL2/include/close_code.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/android/log.h
 
 /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/stdio.h:
@@ -346,5 +348,13 @@ jni/src/overview.h:
 jni/src/button.h:
 
 jni/src/fader.h:
+
+jni/src/label.h:
+
+jni/SDL2_ttf/SDL_ttf.h:
+
+jni/src/../SDL2/include/begin_code.h:
+
+jni/src/../SDL2/include/close_code.h:
 
 /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/android/log.h:
