@@ -68,7 +68,7 @@ void track_toggle_play(int d, float pitch)
 
 void track_reverse_play(int d)
 {
-  tracks[d].pitch = -tracks[0].pitch;
+  tracks[d].pitch = -tracks[d].pitch;
   
   if(tracks[d].play) {
     osc_send_pitch(d, tracks[d].pitch);
