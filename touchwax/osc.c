@@ -55,16 +55,16 @@ int osc_init(struct twinterface *twinterface)
     st = lo_server_thread_new("7771", error);
 
     /* add method that will match any path and args */
-    lo_server_thread_add_method(st, "/touchwax/ppm", "ibi", ppm_handler, NULL);
+    lo_server_thread_add_method(st, "/xwax/ppm", "ibi", ppm_handler, NULL);
 
     /* add method that will match any path and args */
-    lo_server_thread_add_method(st, "/touchwax/track_load", "iissi", track_load_handler, NULL);
+    lo_server_thread_add_method(st, "/xwax/track_load", "iissi", track_load_handler, NULL);
 
     /* add method that will match any path and args */
-    lo_server_thread_add_method(st, "/touchwax/position", "iff", pos_handler, NULL);
+    lo_server_thread_add_method(st, "/xwax/position", "iff", pos_handler, NULL);
 
     /* add method that will match any path and args */
-    lo_server_thread_add_method(st, "/touchwax/scale", "i", scale_handler, NULL);    
+    lo_server_thread_add_method(st, "/xwax/scale", "i", scale_handler, NULL);    
 
     /* add method that will match any path and args */
     //lo_server_thread_add_method(st, NULL, NULL, generic_handler, NULL);

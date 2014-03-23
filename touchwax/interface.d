@@ -20,4 +20,5 @@ interface.o: interface.c interface.h /usr/include/SDL2/SDL.h \
  /usr/include/SDL2/SDL_power.h /usr/include/SDL2/SDL_render.h \
  /usr/include/SDL2/SDL_system.h /usr/include/SDL2/SDL_timer.h \
  /usr/include/SDL2/SDL_version.h track.h osc.h closeup.h overview.h \
- button.h fader.h
+ button.h fader.h label.h /usr/include/SDL2/SDL_ttf.h \
+ /usr/include/SDL2/SDL.h
