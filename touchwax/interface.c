@@ -455,7 +455,7 @@ void interface_loop(struct twinterface *twinterface)
           /* Update text labels */
           char buf[128], *s;
           s = buf;
-          sprintf(s, "%2.2f", twinterface->fader->pitch);
+          sprintf(s, "%2.2f", tracks[twinterface->current_deck].pitch);
           label_set_text(twinterface->label_pitch, s);
           
           

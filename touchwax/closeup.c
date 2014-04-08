@@ -13,6 +13,7 @@
 #endif
 
 #include "closeup.h"
+#include "fader.h"
 #include "osc.h"
 
 #ifdef __ANDROID__
@@ -547,21 +548,40 @@ void closeup_show(struct closeup *closeup)
     
     SDL_RenderCopy(closeup->renderer, closeup->playhead->texture, NULL, &closeup->playhead->rect);      
     
+    /* Update pitch information */
+    
+    closeup_cddj(closeup, 0);
+    
   }
+}
+
+void closeup_cddj(struct closeup *closeup, int y)
+{
+  /* Apply small pitch deviation from touch input */
+  if(y != 0)
+    closeup->tr->pitch = closeup->twinterface->fader->pitch + ((float) y / (float) closeup->twinterface->fader->rect.h);
+  
+  /* Converge pitch to current fader value */
+  //closeup->tr->pitch = closeup->tr->pitch * closeup->twinterface->fader->pitch * 0.1;
+  
+  if(closeup->tr->pitch != closeup->twinterface->fader->pitch)
+    osc_send_pitch(closeup->twinterface->current_deck, closeup->tr->pitch);
+
+  
 }
 
 void closeup_handle_events(struct closeup *closeup, SDL_Event event)
 { 
     
     //The mouse offsets
-    float /*x = 0.0,*/ y = 0.0;
+    int /*x = 0.0,*/ y = 0.0;
 
     //If a mouse button was pressed
     if( event.type == SDL_MOUSEMOTION )
     {
              //Get the mouse offsets
             //x = (float) event.motion.xrel;
-            y = (float) event.motion.yrel;
+            y = event.motion.yrel;
 
             ////If the mouse is over the button
             //if( ( x > btn->box.x ) && ( x < btn->box.x + btn->box.w ) && ( y > btn->box.y ) && ( y < btn->box.y + btn->box.h ) )
@@ -573,7 +593,7 @@ void closeup_handle_events(struct closeup *closeup, SDL_Event event)
                 //tracks[0].position = tracks[0].position + x;
                 
                 if(closeup->touch_mode == CLOSEUP_TOUCH_MODE_CDDJ)
-                  osc_send_position(closeup->twinterface->current_deck, closeup->tr->position - y/100);
+                  closeup_cddj(closeup, y);
                 else if(closeup->touch_mode == CLOSEUP_TOUCH_MODE_VINYL)
                   osc_send_position(closeup->twinterface->current_deck, y/100);
                 //printf("x:%f y:%f\n", x, y);
@@ -590,8 +610,8 @@ void closeup_handle_events(struct closeup *closeup, SDL_Event event)
     } else if( event.type == SDL_MOUSEBUTTONUP ) { 
         if( event.button.button == SDL_BUTTON_LEFT ) {
            closeup->clicked = 0;
-           //if(tracks[0].play)
-            //osc_send_pitch(tracks[0].pitch);
+           if(tracks[closeup->twinterface->current_deck].play)
+             osc_send_pitch(closeup->twinterface->current_deck, closeup->twinterface->fader->pitch);
         }
         
     }
