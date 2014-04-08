@@ -106,7 +106,7 @@ obj/local/armeabi/objs-debug/main/closeup.o: jni/src/closeup.c \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/sys/socket.h \
  jni/src/../lo/lo/lo_osc_types.h jni/src/../lo/lo/lo_errors.h \
  jni/src/../lo/lo/lo_lowlevel.h jni/src/../lo/lo/lo_serverthread.h \
- jni/src/../lo/lo/lo_macros.h \
+ jni/src/../lo/lo/lo_macros.h jni/src/fader.h \
  /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/android/log.h
 
 /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/unistd.h:
@@ -356,5 +356,7 @@ jni/src/../lo/lo/lo_lowlevel.h:
 jni/src/../lo/lo/lo_serverthread.h:
 
 jni/src/../lo/lo/lo_macros.h:
+
+jni/src/fader.h:
 
 /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include/android/log.h:

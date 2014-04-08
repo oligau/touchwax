@@ -1,2 +1,2 @@
 set solib-search-path ./obj/local/armeabi
-directory /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include jni/SDL/include jni/lo/lo jni/src/../SDL2/include jni/src/../lo /home/oligau/bin/android-ndk-r9b/sources/cxx-stl/system
+directory /home/oligau/bin/android-ndk-r9b/platforms/android-9/arch-arm/usr/include jni/SDL/include jni/SDL2_ttf jni/SDL2_ttf/external/freetype-2.4.12/include jni/lo/lo jni/src/../SDL2/include jni/src/../lo jni/src/../SDL2_ttf /home/oligau/bin/android-ndk-r9b/sources/cxx-stl/system
