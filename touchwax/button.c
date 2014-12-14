@@ -107,6 +107,14 @@ int button_handle_events(struct button *btn, SDL_Event event, struct twinterface
         button_update_texture(btn);
         
         SDL_SetTextureAlphaMod(btn->texture, 128);
+
+    } else if( event.type == SDL_MOUSEMOTION )
+    {
+    	//If the mouse is over the button
+    	if( ( x > btn->rect.x ) && ( x < btn->rect.x + btn->rect.w ) && ( y > btn->rect.y ) && ( y < btn->rect.y + btn->rect.h ) )
+    	{
+    		return 1;
+    	}
     }
     
     return 0;

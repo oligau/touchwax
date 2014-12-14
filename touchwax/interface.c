@@ -201,14 +201,14 @@ void interface_widgets_init(struct twinterface *twinterface)
                       &interface_button_touch_mode_callback,
                       &interface_button_touch_mode_color_callback);
 
-    //if(twinterface->label_pitch)
-        //label_free(twinterface->label_pitch);
-    //twinterface->label_pitch = label_init(twinterface->viewport.w-100,
-                      //0, 
-                      //100, 
-                      //20, 
-                      //"",
-                      //twinterface->renderer);
+//    if(twinterface->label_pitch)
+//        label_free(twinterface->label_pitch);
+//    twinterface->label_pitch = label_init(twinterface->viewport.w-100,
+//                      0,
+//                      100,
+//                      20,
+//                      "",
+//                      twinterface->renderer);
                       
     if(twinterface->fader)
         fader_free(twinterface->fader);                      

@@ -93,8 +93,10 @@ int overview_handle_events(struct overview *overview, SDL_Event event)
             }
         }
     } else if( event.type == SDL_MOUSEBUTTONUP ) { 
-        if( event.button.button == SDL_BUTTON_LEFT ) {
+        if( event.button.button == SDL_BUTTON_LEFT && overview->clicked ) {
+           printf("overview unclicked\n");
            overview->clicked = 0;
+           return 1;
         }
     }
     

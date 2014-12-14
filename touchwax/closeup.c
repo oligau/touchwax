@@ -559,14 +559,17 @@ void closeup_cddj(struct closeup *closeup, int y)
 {
   /* Apply small pitch deviation from touch input */
   if(y != 0)
-    closeup->tr->pitch = closeup->twinterface->fader->pitch + ((float) y / (float) closeup->twinterface->fader->rect.h);
-  
+  {
+	if(closeup->tr->play)
+	  closeup->tr->pitch = closeup->twinterface->fader->pitch + ((float) y / (float) closeup->twinterface->fader->rect.h);
+	else
+	  closeup->tr->pitch = ((float) y / (float) closeup->twinterface->fader->rect.h);
+  }
   /* Converge pitch to current fader value */
   //closeup->tr->pitch = closeup->tr->pitch * closeup->twinterface->fader->pitch * 0.1;
   
-  if(closeup->tr->pitch != closeup->twinterface->fader->pitch)
-    osc_send_pitch(closeup->twinterface->current_deck, closeup->tr->pitch);
-
+  //if(closeup->tr->pitch != closeup->twinterface->fader->pitch)
+  osc_send_pitch(closeup->twinterface->current_deck, closeup->tr->pitch);
   
 }
 
@@ -612,6 +615,8 @@ void closeup_handle_events(struct closeup *closeup, SDL_Event event)
            closeup->clicked = 0;
            if(tracks[closeup->twinterface->current_deck].play)
              osc_send_pitch(closeup->twinterface->current_deck, closeup->twinterface->fader->pitch);
+           else
+        	 osc_send_pitch(closeup->twinterface->current_deck, 0.0f);
         }
         
     }
