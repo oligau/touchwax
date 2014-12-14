@@ -1,6 +1,32 @@
 #include <sys/stat.h>
 #include <errno.h>
 
+#ifdef __ANDROID__
+#include <android/log.h>
+#include <zip.h>
+#include <zipint.h>
+#include <jni.h>
+
+char packageName[1024] = {0};
+zip   *pkg_zip;
+
+JNIEXPORT void JNICALL Java_com_example_test_MySurfaceView_setAppName( JNIEnv * env, jobject obj, jstring pkgname )
+{
+   const char *buffer = env->GetStringUTFChars( pkgname, false );
+
+   int error;
+   pkg_zip = zip_open( buffer, 0, &error );
+   strcpy( packageName, buffer );
+   if( pkg_zip == NULL ){
+      LOGE("Failed to open apk: %i", error );
+   }
+   env->ReleaseStringUTFChars( pkgname, buffer );
+}
+
+#endif // __ANDROID__
+
+
+
 #include "label.h"
 
 #ifdef __ANDROID__
@@ -101,6 +127,7 @@ struct label *label_init(int x, int y, int w, int h, const char *text, SDL_Rende
   label->renderer = renderer;
   label->surface = 0;
   label->texture = 0;
+  label->font = 0;
   memset(label->text, '\0', sizeof(label->text));
 
   

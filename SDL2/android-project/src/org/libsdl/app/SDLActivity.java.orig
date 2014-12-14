@@ -45,8 +45,13 @@ public class SDLActivity extends Activity {
         //System.loadLibrary("SDL2_image");
         //System.loadLibrary("SDL2_mixer");
         //System.loadLibrary("SDL2_net");
+<<<<<<< HEAD
+        System.loadLibrary("zip");
+        System.loadLibrary("SDL2_ttf");
+=======
         System.loadLibrary("SDL2_ttf");
         System.loadLibrary("libzip");
+>>>>>>> 7809f5a384ced2713914777feff03655440c42cd
         System.loadLibrary("lo");
         System.loadLibrary("main");
     }
@@ -78,6 +83,18 @@ public class SDLActivity extends Activity {
 
         setContentView(mLayout);
         
+<<<<<<< HEAD
+        //// Send C application our package name
+        //PackageInfo info = null;
+        //try {
+           //info = getContext().getPackageManager().getPackageInfo("com.example.text", 0);
+        //} catch( NameNotFoundException e ) {
+           //Log.e( TAG, e.toString() );
+           //return;
+        //}
+        //setAppName( info.applicationInfo.sourceDir );
+        
+=======
         // Send jni code the apk path
         PackageInfo info = null;
         try {
@@ -87,6 +104,7 @@ public class SDLActivity extends Activity {
            return;
         }
         setAppName( info.applicationInfo.sourceDir );
+>>>>>>> 7809f5a384ced2713914777feff03655440c42cd
     }
 
     // Events

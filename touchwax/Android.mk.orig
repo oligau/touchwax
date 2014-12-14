@@ -6,11 +6,19 @@ LOCAL_MODULE := main
 
 SDL_PATH := ../SDL2
 LO_PATH := ../lo
+<<<<<<< HEAD
+SDL_TTF_PATH := ../SDL2_ttf
+
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(SDL_PATH)/include \
+	$(LOCAL_PATH)/$(LO_PATH) \
+	$(LOCAL_PATH)/$(SDL_TTF_PATH)
+=======
 LIBZIP_PATH := ../libzip
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(SDL_PATH)/include \
 	$(LOCAL_PATH)/$(LO_PATH) \
 	$(LOCAL_PATH)/$(LIBZIP_PATH)
+>>>>>>> 7809f5a384ced2713914777feff03655440c42cd
 
 # Add your application source files here...
 LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
